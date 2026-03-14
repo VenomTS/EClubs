@@ -1,31 +1,26 @@
-using E_Clubs.Data;
-using E_Clubs.DTO.Auth;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using E_Clubs.DTO.UserDTO;
+using E_Clubs.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace E_Clubs.Controllers;
 
 [ApiController]
-[Route("/api/auth")]
-public class AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) : ControllerBase
+[Route("/api/[controller]")]
+public class AuthController(UserService userService) : ControllerBase
 {
-    [HttpPost("/roles/{userId}")]
-    public async Task<IActionResult> AssignRole(string userId, [FromBody] AssignRoleRequest roleRequest)
+    [HttpPost("register")]
+    public async Task<ActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
     {
-        var role = await roleManager.Roles.FirstOrDefaultAsync(x => x.Name == roleRequest.Role);
+        var result = await userService.RegisterUserAsync(registerUserRequest);
+
+        return result.Match<ActionResult>(_ => Created(), _ => Conflict("User already exists"));
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult> Login([FromBody] LoginUserRequest loginUserRequest)
+    {
+        var result = await userService.LoginAsync(loginUserRequest);
         
-        if(role == null)
-            return BadRequest();
-        
-        var user = await userManager.FindByIdAsync(userId);
-        if (user == null)
-            return NotFound();
-
-
-
-        await userManager.AddToRoleAsync(user, role.Name!);
-        return Ok();
+        return result.Match<ActionResult>(Ok, _ => NotFound("Invalid mail or password"));
     }
 }
