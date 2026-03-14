@@ -9,18 +9,29 @@ namespace E_Clubs.Controllers;
 public class AuthController(UserService userService) : ControllerBase
 {
     [HttpPost("register")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<ActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
     {
         var result = await userService.RegisterUserAsync(registerUserRequest);
 
-        return result.Match<ActionResult>(_ => Created(), _ => Conflict("User already exists"));
+        return result.Match<ActionResult>(_ => Created(), _ => Conflict(new ProblemDetails
+        {
+            Type = "User-Already-Exists",
+            Title = "Conflict",
+            Status = StatusCodes.Status409Conflict,
+            Detail = "A user with this email already exists",
+            Instance = HttpContext.Request.Path
+        }));
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult> Login([FromBody] LoginUserRequest loginUserRequest)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<LoginUserResponse>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<LoginUserResponse>> Login([FromBody] LoginUserRequest loginUserRequest)
     {
         var result = await userService.LoginAsync(loginUserRequest);
         
-        return result.Match<ActionResult>(Ok, _ => NotFound("Invalid mail or password"));
+        return result.Match<ActionResult>(Ok, _ => Unauthorized("Invalid mail or password"));
     }
 }

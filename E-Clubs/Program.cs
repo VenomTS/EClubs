@@ -1,5 +1,4 @@
 using System.Text;
-using AutoMapper;
 using E_Clubs.Data;
 using E_Clubs.Mapper;
 using E_Clubs.Repositories;
@@ -38,14 +37,16 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Scoped Services
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<PasswordHashingService>();
+// Services
 builder.Services.AddScoped<JWTService>();
+builder.Services.AddScoped<PasswordHashingService>();
+builder.Services.AddScoped<UserService>();
+
+// Repositories
+builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserRoleRepository>();
 
-builder.Services.AddAutoMapper(config => { }, typeof(MappingProfile));
+builder.Services.AddAutoMapper(_ => { }, typeof(MappingProfile));
 
 var app = builder.Build();
 
@@ -56,8 +57,9 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

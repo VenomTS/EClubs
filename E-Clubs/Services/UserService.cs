@@ -26,7 +26,7 @@ public class UserService(IMapper mapper, PasswordHashingService hashService, JWT
     }
 
     // UserNotFound is used for both invalid mail AND password (for security reasons)
-    public async Task<OneOf<string, UserNotFound>> LoginAsync(LoginUserRequest request)
+    public async Task<OneOf<LoginUserResponse, UserNotFound>> LoginAsync(LoginUserRequest request)
     {
         var userModel = await userRepo.GetUserByMailAsync(request.Mail);
         if (userModel == null)
@@ -39,6 +39,11 @@ public class UserService(IMapper mapper, PasswordHashingService hashService, JWT
 
         var jwt = jwtService.GenerateToken(userModel, userRoles);
 
-        return jwt;
+        var loginUserResponse = new LoginUserResponse
+        {
+            Token = jwt,
+        };
+
+        return loginUserResponse;
     }
 }
