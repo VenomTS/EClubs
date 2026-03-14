@@ -6,12 +6,12 @@ public static class AppRoles
 {
     public const string Admin = "Admin";
     public const string Director = "Director";
-    public const string Teacher = "Teacher";
+    public const string Professor = "Professor";
     public const string Student = "Student";
 
     public static bool Exists(string role) => role.Equals(Admin, StringComparison.OrdinalIgnoreCase) || 
                                               role.Equals(Director, StringComparison.OrdinalIgnoreCase) || 
-                                              role.Equals(Teacher, StringComparison.OrdinalIgnoreCase) ||  
+                                              role.Equals(Professor, StringComparison.OrdinalIgnoreCase) ||  
                                               role.Equals(Student, StringComparison.OrdinalIgnoreCase);
 
     public static string MergeRoles(params string[] roles)

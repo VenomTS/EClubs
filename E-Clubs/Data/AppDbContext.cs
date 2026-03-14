@@ -9,6 +9,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
 
+    public DbSet<Club> Clubs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -21,5 +23,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             new Role { Id = Guid.NewGuid(), Name = "Professor" },
             new Role { Id = Guid.NewGuid(), Name = "Student" }
         );
+        
+        builder.Entity<Club>().Property(club => club.CreatedAt).ValueGeneratedOnAdd().HasDefaultValueSql("NOW()");
     }
 }

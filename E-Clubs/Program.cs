@@ -41,10 +41,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<JWTService>();
 builder.Services.AddScoped<PasswordHashingService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ClubService>();
 
 // Repositories
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserRoleRepository>();
+builder.Services.AddScoped<ClubRepository>();
 
 builder.Services.AddAutoMapper(_ => { }, typeof(MappingProfile));
 
@@ -57,7 +59,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

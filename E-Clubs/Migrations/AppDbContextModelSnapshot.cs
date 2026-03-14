@@ -22,15 +22,48 @@ namespace E_Clubs.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("E_Clubs.Models.Role", b =>
+            modelBuilder.Entity("E_Clubs.Models.Club", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
+                    b.Property<DateOnly>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("date")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid>("ProfessorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfessorId");
+
+                    b.ToTable("Clubs");
+                });
+
+            modelBuilder.Entity("E_Clubs.Models.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -43,26 +76,22 @@ namespace E_Clubs.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6b8d44e7-1791-4dce-a8e1-b42e57c3b291"),
-                            Description = "Admin Description",
+                            Id = new Guid("92fb65a2-86e7-4ed9-8f85-f0763ed4fb81"),
                             Name = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("92e7afe3-0bae-4587-b1e4-9783baa92bcb"),
-                            Description = "Director Description",
+                            Id = new Guid("e5337230-d695-48f7-a77e-1f26d771aa55"),
                             Name = "Director"
                         },
                         new
                         {
-                            Id = new Guid("c9dcc43c-07d6-4a82-95d8-7ef00e036c83"),
-                            Description = "Professor Description",
+                            Id = new Guid("017a5cef-b357-41c8-b91a-d75f75ed3baf"),
                             Name = "Professor"
                         },
                         new
                         {
-                            Id = new Guid("a383618c-5b25-4850-a8aa-55ed46dca708"),
-                            Description = "Student Description",
+                            Id = new Guid("b98de1b5-d265-4fb2-9276-ab81c78ef0b8"),
                             Name = "Student"
                         });
                 });
@@ -111,6 +140,17 @@ namespace E_Clubs.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("E_Clubs.Models.Club", b =>
+                {
+                    b.HasOne("E_Clubs.Models.User", "Professor")
+                        .WithMany()
+                        .HasForeignKey("ProfessorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Professor");
                 });
 
             modelBuilder.Entity("E_Clubs.Models.UserRole", b =>
