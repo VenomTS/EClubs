@@ -1,8 +1,11 @@
 using System.Text;
-using E_Clubs.Data;
-using E_Clubs.Mapper;
-using E_Clubs.Repositories;
-using E_Clubs.Services;
+using E_Clubs;
+using E_Clubs.Auth.Services;
+using E_Clubs.Clubs.Repositories;
+using E_Clubs.Clubs.Services;
+using E_Clubs.Database;
+using E_Clubs.Users.Repositories;
+using E_Clubs.Users.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
