@@ -10,8 +10,11 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<User, RegisterUserRequest>().ReverseMap();
+        CreateMap<User, ClubProfessorResponse>().ReverseMap();
+        
         CreateMap<Club, CreateClubRequest>().ReverseMap();
         CreateMap<Club, CreateClubResponse>().ReverseMap();
         CreateMap<Club, GetClubByIdResponse>().ReverseMap();
+        CreateMap<Club, GetAllClubsResponse>().ReverseMap();
     }
 }
