@@ -1,10 +1,10 @@
 using E_Clubs.Users;
+using E_Clubs.WorkPlans;
 
 namespace E_Clubs.Clubs;
 
 public class Club
 {
-    
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public Guid ProfessorId { get; set; }
@@ -16,5 +16,6 @@ public class Club
     
     // Mapping Properties
     public required User Professor { get; set; }
+    public List<WorkPlan> WorkPlans { get; set; } = [];
 
 }

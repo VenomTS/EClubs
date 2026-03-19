@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using E_Clubs;
 using E_Clubs.Auth.Services;
 using E_Clubs.Clubs.Repositories;
@@ -6,6 +7,8 @@ using E_Clubs.Clubs.Services;
 using E_Clubs.Database;
 using E_Clubs.Users.Repositories;
 using E_Clubs.Users.Services;
+using E_Clubs.WorkPlans.Repositories;
+using E_Clubs.WorkPlans.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,7 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -26,7 +30,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters()
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -42,14 +46,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Services
 builder.Services.AddScoped<JWTService>();
-builder.Services.AddScoped<PasswordHashingService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ClubService>();
+builder.Services.AddScoped<WorkPlansService>();
 
 // Repositories
 builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<UserRoleRepository>();
 builder.Services.AddScoped<ClubRepository>();
+builder.Services.AddScoped<WorkPlansRepository>();
 
 builder.Services.AddAutoMapper(_ => { }, typeof(MappingProfile));
 

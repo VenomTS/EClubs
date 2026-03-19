@@ -22,7 +22,7 @@ namespace E_Clubs.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("E_Clubs.Models.Club", b =>
+            modelBuilder.Entity("E_Clubs.Clubs.Club", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,44 +59,7 @@ namespace E_Clubs.Migrations
                     b.ToTable("Clubs");
                 });
 
-            modelBuilder.Entity("E_Clubs.Models.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("92fb65a2-86e7-4ed9-8f85-f0763ed4fb81"),
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = new Guid("e5337230-d695-48f7-a77e-1f26d771aa55"),
-                            Name = "Director"
-                        },
-                        new
-                        {
-                            Id = new Guid("017a5cef-b357-41c8-b91a-d75f75ed3baf"),
-                            Name = "Professor"
-                        },
-                        new
-                        {
-                            Id = new Guid("b98de1b5-d265-4fb2-9276-ab81c78ef0b8"),
-                            Name = "Student"
-                        });
-                });
-
-            modelBuilder.Entity("E_Clubs.Models.User", b =>
+            modelBuilder.Entity("E_Clubs.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -122,29 +85,54 @@ namespace E_Clubs.Migrations
                         .IsRequired()
                         .HasColumnType("bytea");
 
+                    b.Property<int>("Roles")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("E_Clubs.Models.UserRole", b =>
+            modelBuilder.Entity("E_Clubs.WorkPlans.WorkPlan", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("RoleId")
+                    b.Property<Guid>("ClubId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.HasIndex("RoleId");
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.ToTable("UserRoles");
+                    b.Property<DateOnly?>("RealizationDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("ScheduledDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.ToTable("WorkPlans");
                 });
 
-            modelBuilder.Entity("E_Clubs.Models.Club", b =>
+            modelBuilder.Entity("E_Clubs.Clubs.Club", b =>
                 {
-                    b.HasOne("E_Clubs.Models.User", "Professor")
+                    b.HasOne("E_Clubs.Users.User", "Professor")
                         .WithMany()
                         .HasForeignKey("ProfessorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -153,23 +141,20 @@ namespace E_Clubs.Migrations
                     b.Navigation("Professor");
                 });
 
-            modelBuilder.Entity("E_Clubs.Models.UserRole", b =>
+            modelBuilder.Entity("E_Clubs.WorkPlans.WorkPlan", b =>
                 {
-                    b.HasOne("E_Clubs.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
+                    b.HasOne("E_Clubs.Clubs.Club", "Club")
+                        .WithMany("WorkPlans")
+                        .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("E_Clubs.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Club");
+                });
 
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
+            modelBuilder.Entity("E_Clubs.Clubs.Club", b =>
+                {
+                    b.Navigation("WorkPlans");
                 });
 #pragma warning restore 612, 618
         }

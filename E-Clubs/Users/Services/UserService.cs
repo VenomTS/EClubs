@@ -8,7 +8,7 @@ using OneOf.Types;
 
 namespace E_Clubs.Users.Services;
 
-public class UserService(IMapper mapper, PasswordHashingService hashService, JWTService jwtService, UserRepository userRepo, UserRoleRepository userRoleRepo)
+public class UserService(IMapper mapper, JWTService jwtService, UserRepository userRepo)
 {
     public async Task<OneOf<Success, UserAlreadyExists>> RegisterUserAsync(RegisterUserRequest request)
     {
@@ -17,7 +17,7 @@ public class UserService(IMapper mapper, PasswordHashingService hashService, JWT
         
         var userModel = mapper.Map<User>(request);
         
-        hashService.CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
+        PasswordHashingService.CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
         
         userModel.PasswordHash = passwordHash;
         userModel.PasswordSalt = passwordSalt;
@@ -29,15 +29,10 @@ public class UserService(IMapper mapper, PasswordHashingService hashService, JWT
     public async Task<OneOf<LoginUserResponse, UserNotFound>> LoginAsync(LoginUserRequest request)
     {
         var userModel = await userRepo.GetUserByMailAsync(request.Mail);
-        if (userModel == null)
+        if (userModel == null || PasswordHashingService.VerifyPasswordHash(request.Password, userModel.PasswordHash, userModel.PasswordSalt))
             return new UserNotFound();
 
-        if (!hashService.VerifyPasswordHash(request.Password, userModel.PasswordHash, userModel.PasswordSalt))
-            return new UserNotFound();
-
-        var userRoles = await userRoleRepo.GetUserRolesAsync(userModel.Id);
-
-        var jwt = jwtService.GenerateToken(userModel, userRoles);
+        var jwt = jwtService.GenerateToken(userModel);
 
         var loginUserResponse = new LoginUserResponse
         {

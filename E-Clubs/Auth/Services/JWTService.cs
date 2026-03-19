@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using E_Clubs.Enums;
 using E_Clubs.Users;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -8,13 +9,17 @@ namespace E_Clubs.Auth.Services;
 
 public class JWTService(IConfiguration config)
 {
-    private IEnumerable<Claim> GenerateClaims(User user, IEnumerable<Role> roles)
+    private static List<Claim> GenerateClaims(User user)
     {
         var claims = new List<Claim>
         {
             new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
         };
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.Name)));
+
+        var userRoles = Enum.GetValues<Roles>()
+            .Where(role => role != Roles.Default && user.Roles.HasFlag(role));
+        
+        claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
         return claims;
     }
 
@@ -24,14 +29,14 @@ public class JWTService(IConfiguration config)
         return secretKey == null ? throw new ArgumentNullException(nameof(secretKey)) : new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
     }
 
-    private SigningCredentials GenerateSigningCredentials(SymmetricSecurityKey securityKey)
+    private static SigningCredentials GenerateSigningCredentials(SymmetricSecurityKey securityKey)
     {
         return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
     }
 
-    private SecurityTokenDescriptor GenerateTokenDescriptor(User user, IEnumerable<Role> roles)
+    private SecurityTokenDescriptor GenerateTokenDescriptor(User user)
     {
-        var claims = GenerateClaims(user, roles);
+        var claims = GenerateClaims(user);
         var securityKey = GenerateSecurityKey();
         var signingCredentials = GenerateSigningCredentials(securityKey);
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -45,10 +50,10 @@ public class JWTService(IConfiguration config)
         return tokenDescriptor;
     }
 
-    public string GenerateToken(User user, IEnumerable<Role> roles)
+    public string GenerateToken(User user)
     {
         var handler = new JsonWebTokenHandler();
-        var tokenDescriptor = GenerateTokenDescriptor(user, roles);
+        var tokenDescriptor = GenerateTokenDescriptor(user);
         
         var token = handler.CreateToken(tokenDescriptor);
         

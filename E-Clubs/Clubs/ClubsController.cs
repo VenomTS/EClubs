@@ -1,8 +1,6 @@
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Clubs.QueryObjects;
 using E_Clubs.Clubs.Services;
-using E_Clubs.Database;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Clubs;
@@ -12,7 +10,6 @@ namespace E_Clubs.Clubs;
 public class ClubsController(ClubService clubService) : ControllerBase
 {
     [HttpPost]
-    [Authorize(Roles = AppRoles.Professor)]
     public async Task<ActionResult<CreateClubResponse>> Create([FromBody] CreateClubRequest request)
     {
         var createdClub = await clubService.CreateClubAsync(request);
@@ -20,7 +17,6 @@ public class ClubsController(ClubService clubService) : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{AppRoles.Admin}, {AppRoles.Professor}, {AppRoles.Student}")]
     public async Task<ActionResult<GetAllClubsResponse>> GetAll([FromQuery] GetAllClubsQueryObject queryObject)
     {
         var clubs = await clubService.GetAllClubsAsync(queryObject);
@@ -29,13 +25,13 @@ public class ClubsController(ClubService clubService) : ControllerBase
     }
     
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = $"{AppRoles.Admin}, {AppRoles.Professor}, {AppRoles.Student}")]
     public async Task<ActionResult<GetClubByIdResponse>> GetById(Guid id)
     {
         var result = await clubService.GetClubByIdAsync(id);
 
         return result.Match<ActionResult<GetClubByIdResponse>>(club => Ok(club), _ => NotFound("Club not found"));
     }
+    
     //
     // public async Task Update()
     // {

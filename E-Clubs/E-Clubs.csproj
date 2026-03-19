@@ -30,6 +30,7 @@
       <Folder Include="Template\Repositories\" />
       <Folder Include="Template\Services\" />
       <Folder Include="Users\QueryObjects\" />
+      <Folder Include="WorkPlans\QueryObjects\" />
     </ItemGroup>
 
 </Project>

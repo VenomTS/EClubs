@@ -3,16 +3,16 @@ using System.Text;
 
 namespace E_Clubs.Auth.Services;
 
-public class PasswordHashingService
+public static class PasswordHashingService
 {
-    public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         using var hmac = new HMACSHA512();
         passwordSalt = hmac.Key;
         passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
     }
 
-    public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    public static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
     {
         using var hmac = new HMACSHA512(passwordSalt);
         

@@ -11,4 +11,5 @@ public class GetClubByIdResponse
     public DateOnly CreatedAt { get; set; }
 
     public required ClubProfessorResponse Professor { get; set; }
+    public required List<ClubWorkPlansResponse> WorkPlans { get; set; }
 }
