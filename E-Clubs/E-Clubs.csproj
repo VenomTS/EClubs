@@ -25,6 +25,7 @@
       <Folder Include="Auth\DTO\" />
       <Folder Include="Auth\QueryObjects\" />
       <Folder Include="Auth\Repositories\" />
+      <Folder Include="Messages\QueryObjects\" />
       <Folder Include="Template\DTO\" />
       <Folder Include="Template\QueryObjects\" />
       <Folder Include="Template\Repositories\" />

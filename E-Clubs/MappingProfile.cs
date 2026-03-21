@@ -1,6 +1,8 @@
 using AutoMapper;
 using E_Clubs.Clubs;
 using E_Clubs.Clubs.DTO;
+using E_Clubs.Messages;
+using E_Clubs.Messages.DTO;
 using E_Clubs.Users;
 using E_Clubs.Users.DTO;
 using E_Clubs.WorkPlans;
@@ -14,6 +16,7 @@ public class MappingProfile : Profile
     {
         CreateMap<User, RegisterUserRequest>().ReverseMap();
         CreateMap<User, ClubProfessorResponse>().ReverseMap();
+        CreateMap<User, MessageSenderResponse>().ReverseMap();
         
         CreateMap<Club, CreateClubRequest>().ReverseMap();
         CreateMap<Club, CreateClubResponse>().ReverseMap();
@@ -24,5 +27,10 @@ public class MappingProfile : Profile
         CreateMap<WorkPlan, CreateWorkPlanResponse>().ReverseMap();
         CreateMap<WorkPlan, GetAllWorkPlansByClubIdResponse>().ReverseMap();
         CreateMap<WorkPlan, ClubWorkPlansResponse>().ReverseMap();
+        
+        CreateMap<Message, CreateMessageRequest>().ReverseMap();
+        CreateMap<Message, CreateMessageResponse>().ReverseMap();
+        CreateMap<Message, GetAllMessagesByClubIdResponse>().ReverseMap();
+        CreateMap<Message, ClubMessageResponse>().ReverseMap();
     }
 }

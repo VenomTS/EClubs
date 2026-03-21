@@ -5,6 +5,8 @@ using E_Clubs.Auth.Services;
 using E_Clubs.Clubs.Repositories;
 using E_Clubs.Clubs.Services;
 using E_Clubs.Database;
+using E_Clubs.Messages.Repositories;
+using E_Clubs.Messages.Services;
 using E_Clubs.Users.Repositories;
 using E_Clubs.Users.Services;
 using E_Clubs.WorkPlans.Repositories;
@@ -49,11 +51,16 @@ builder.Services.AddScoped<JWTService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ClubService>();
 builder.Services.AddScoped<WorkPlansService>();
+builder.Services.AddScoped<MessageService>();
 
 // Repositories
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<ClubRepository>();
 builder.Services.AddScoped<WorkPlansRepository>();
+builder.Services.AddScoped<MessageRepository>();
+
+// CORS
+builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
 builder.Services.AddAutoMapper(_ => { }, typeof(MappingProfile));
 
