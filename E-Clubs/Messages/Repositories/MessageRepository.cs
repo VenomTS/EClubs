@@ -24,7 +24,7 @@ public class MessageRepository(AppDbContext dbContext)
 
     public async Task<List<Message>> GetMessagesByClubIdAsync(Guid clubId)
     {
-        var messages = await dbContext.Messages.Where(message => message.ClubId == clubId).ToListAsync();
+        var messages = await dbContext.Messages.Where(message => message.ClubId == clubId).Include(message => message.Sender).ToListAsync();
 
         return messages;
     }

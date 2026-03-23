@@ -29,7 +29,7 @@ public class UserService(IMapper mapper, JWTService jwtService, UserRepository u
     public async Task<OneOf<LoginUserResponse, UserNotFound>> LoginAsync(LoginUserRequest request)
     {
         var userModel = await userRepo.GetUserByMailAsync(request.Mail);
-        if (userModel == null || PasswordHashingService.VerifyPasswordHash(request.Password, userModel.PasswordHash, userModel.PasswordSalt))
+        if (userModel == null || !PasswordHashingService.VerifyPasswordHash(request.Password, userModel.PasswordHash, userModel.PasswordSalt))
             return new UserNotFound();
 
         var jwt = jwtService.GenerateToken(userModel);

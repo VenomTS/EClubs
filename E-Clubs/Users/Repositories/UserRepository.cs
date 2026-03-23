@@ -20,4 +20,6 @@ public class UserRepository(AppDbContext dbContext)
     public async Task<bool> UserExistsAsync(string mail) => 
         await dbContext.Users.AnyAsync(user => user.Mail == mail);
     
+    public async Task<bool> UserExistsAsync(Guid userId) => await dbContext.Users.AnyAsync(user => user.Id == userId);
+    
 }

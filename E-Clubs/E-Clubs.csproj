@@ -22,6 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Attendances\QueryObjects\" />
       <Folder Include="Auth\DTO\" />
       <Folder Include="Auth\QueryObjects\" />
       <Folder Include="Auth\Repositories\" />

@@ -1,4 +1,6 @@
 using AutoMapper;
+using E_Clubs.Attendances;
+using E_Clubs.Attendances.DTO;
 using E_Clubs.Clubs;
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Messages;
@@ -32,5 +34,9 @@ public class MappingProfile : Profile
         CreateMap<Message, CreateMessageResponse>().ReverseMap();
         CreateMap<Message, GetAllMessagesByClubIdResponse>().ReverseMap();
         CreateMap<Message, ClubMessageResponse>().ReverseMap();
+        
+        CreateMap<Attendance, GetAllAttendancesResponse>().ReverseMap();
+        CreateMap<Attendance, GetUserAttendanceResponse>().ReverseMap();
+        CreateMap<Attendance, RegisterAttendanceRequest>().ReverseMap();
     }
 }

@@ -1,3 +1,4 @@
+using E_Clubs.Attendances;
 using E_Clubs.Clubs;
 using E_Clubs.Messages;
 using E_Clubs.Users;
@@ -12,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Club> Clubs { get; set; }
     public DbSet<WorkPlan> WorkPlans { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Attendance> Attendances { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -19,5 +21,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         
         builder.Entity<Club>().Property(club => club.CreatedAt).ValueGeneratedOnAdd().HasDefaultValueSql("NOW()");
         builder.Entity<Message>().Property(message => message.SentAt).ValueGeneratedOnAdd().HasDefaultValueSql("NOW()");
+        builder.Entity<Attendance>().Property(attendance => attendance.Date).ValueGeneratedOnAdd().HasDefaultValueSql("NOW()");
     }
 }

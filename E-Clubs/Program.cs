@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using E_Clubs;
+using E_Clubs.Attendances.Repositories;
+using E_Clubs.Attendances.Services;
 using E_Clubs.Auth.Services;
 using E_Clubs.Clubs.Repositories;
 using E_Clubs.Clubs.Services;
@@ -52,12 +54,14 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ClubService>();
 builder.Services.AddScoped<WorkPlansService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<AttendanceService>();
 
 // Repositories
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<ClubRepository>();
 builder.Services.AddScoped<WorkPlansRepository>();
 builder.Services.AddScoped<MessageRepository>();
+builder.Services.AddScoped<AttendanceRepository>();
 
 // CORS
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
@@ -72,6 +76,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 

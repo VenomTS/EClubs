@@ -1,0 +1,71 @@
+using AutoMapper;
+using E_Clubs.Attendances.DTO;
+using E_Clubs.Attendances.Repositories;
+using E_Clubs.Clubs.Repositories;
+using E_Clubs.Enums;
+using E_Clubs.OneOfTypes;
+using E_Clubs.Users.Repositories;
+using OneOf;
+using OneOf.Types;
+
+namespace E_Clubs.Attendances.Services;
+
+public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRepo, ClubRepository clubRepo, UserRepository userRepo)
+{
+    public async Task<OneOf<List<GetAllAttendancesResponse>, ClubNotFound>> GetAllAttendancesByClubIdAsync(Guid clubId)
+    {
+        var club = await clubRepo.GetClubByIdAsync(clubId);
+        if(club == null)
+            return new ClubNotFound();
+
+        var attendances = await attendanceRepo.GetAttendancesByClubId(clubId);
+        
+        return mapper.Map<List<GetAllAttendancesResponse>>(attendances);
+    }
+
+    public async Task<OneOf<List<GetUserAttendanceResponse>, ClubNotFound, UserNotFound>>
+        GetUserAttendanceByClubIdAsync(Guid clubId, Guid userId)
+    {
+        var club = await clubRepo.GetClubByIdAsync(clubId);
+        if (club == null)
+            return new ClubNotFound();
+
+        var userExists = await userRepo.UserExistsAsync(userId);
+        if (!userExists)
+            return new UserNotFound();
+
+        var attendances = await attendanceRepo.GetUserAttendancesByClubId(clubId, userId);
+        
+        return mapper.Map<List<GetUserAttendanceResponse>>(attendances);
+    }
+
+    public async Task<OneOf<Success, ClubNotFound, UserNotFound>> RegisterAttendanceAsync(Guid clubId, RegisterAttendanceRequest request)
+    {
+        var club = await clubRepo.GetClubByIdAsync(clubId);
+        if (club == null)
+            return new ClubNotFound();
+        
+        var userExists = await userRepo.UserExistsAsync(request.UserId);
+        if (!userExists)
+            return new UserNotFound();
+
+        var attendanceModel = mapper.Map<Attendance>(request);
+
+        attendanceModel.ClubId = clubId;
+        attendanceModel.Status = AttendanceStatus.Present;
+
+        await attendanceRepo.RegisterAttendance(attendanceModel);
+        return new Success();
+    }
+
+    public async Task<OneOf<Success, ClubNotFound>> MarkAbsentStudentsAsync(Guid clubId)
+    {
+        var club = await clubRepo.GetClubByIdAsync(clubId);
+        if (club == null)
+            return new ClubNotFound();
+        
+        // NOT YET IMPLEMENTED SINCE THERE IS NO JOIN TABLE BETWEEN USERS AND CLUBS
+        
+        return new Success();
+    }
+}
