@@ -32,4 +32,6 @@ public class ClubRepository(AppDbContext dbContext)
         .Include(club => club.WorkPlans)
         .Include(club => club.Messages)
         .FirstOrDefaultAsync(club => club.Id == id);
+    
+    public async Task<bool> ClubExistsAsync(Guid clubId) => await dbContext.Clubs.AnyAsync(club => club.Id == clubId);
 }

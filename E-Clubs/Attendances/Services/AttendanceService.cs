@@ -14,8 +14,8 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
 {
     public async Task<OneOf<List<GetAllAttendancesResponse>, ClubNotFound>> GetAllAttendancesByClubIdAsync(Guid clubId)
     {
-        var club = await clubRepo.GetClubByIdAsync(clubId);
-        if(club == null)
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        if(!clubExists)
             return new ClubNotFound();
 
         var attendances = await attendanceRepo.GetAttendancesByClubId(clubId);
@@ -26,8 +26,8 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
     public async Task<OneOf<List<GetUserAttendanceResponse>, ClubNotFound, UserNotFound>>
         GetUserAttendanceByClubIdAsync(Guid clubId, Guid userId)
     {
-        var club = await clubRepo.GetClubByIdAsync(clubId);
-        if (club == null)
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        if(!clubExists)
             return new ClubNotFound();
 
         var userExists = await userRepo.UserExistsAsync(userId);
@@ -41,8 +41,8 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
 
     public async Task<OneOf<Success, ClubNotFound, UserNotFound>> RegisterAttendanceAsync(Guid clubId, RegisterAttendanceRequest request)
     {
-        var club = await clubRepo.GetClubByIdAsync(clubId);
-        if (club == null)
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        if(!clubExists)
             return new ClubNotFound();
         
         var userExists = await userRepo.UserExistsAsync(request.UserId);
@@ -60,8 +60,8 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
 
     public async Task<OneOf<Success, ClubNotFound>> MarkAbsentStudentsAsync(Guid clubId)
     {
-        var club = await clubRepo.GetClubByIdAsync(clubId);
-        if (club == null)
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        if(!clubExists)
             return new ClubNotFound();
         
         // NOT YET IMPLEMENTED SINCE THERE IS NO JOIN TABLE BETWEEN USERS AND CLUBS

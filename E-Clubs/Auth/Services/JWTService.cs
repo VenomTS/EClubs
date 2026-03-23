@@ -14,6 +14,8 @@ public class JWTService(IConfiguration config)
         var claims = new List<Claim>
         {
             new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new (JwtRegisteredClaimNames.GivenName, user.FirstName),
+            new (JwtRegisteredClaimNames.FamilyName, user.LastName),
         };
 
         var userRoles = Enum.GetValues<Roles>()

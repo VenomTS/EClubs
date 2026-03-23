@@ -12,7 +12,8 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
 {
     public async Task<OneOf<List<GetAllWorkPlansByClubIdResponse>, ClubNotFound>> GetAllWorkPlansByClubIdAsync(Guid clubId)
     {
-        if(await clubRepo.GetClubByIdAsync(clubId) == null)
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        if(!clubExists)
             return new ClubNotFound();
         
         var workPlans = await workPlansRepo.GetWorkPlansByClubIdAsync(clubId);
@@ -25,8 +26,8 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
     public async Task<OneOf<CreateWorkPlanResponse, ClubNotFound, WorkPlanAlreadyExists>> CreateWorkPlanAsync(
         Guid clubId, CreateWorkPlanRequest request)
     {
-        var club = await clubRepo.GetClubByIdAsync(clubId);
-        if (club == null)
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        if(!clubExists)
             return new ClubNotFound();
 
         var workPlanModel = mapper.Map<WorkPlan>(request);
@@ -34,7 +35,7 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         workPlanModel.Status = WorkPlanStatus.Scheduled;
         workPlanModel.RealizationDate = null;
 
-        var exists = await workPlansRepo.WorkPlanExists(workPlanModel);
+        var exists = await workPlansRepo.WorkPlanExistsAsync(workPlanModel);
         
         if(exists)
             return new WorkPlanAlreadyExists();
