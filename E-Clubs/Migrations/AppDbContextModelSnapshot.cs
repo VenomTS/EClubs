@@ -22,6 +22,35 @@ namespace E_Clubs.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("E_Clubs.Attendances.Attendance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Date")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("date")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Attendances");
+                });
+
             modelBuilder.Entity("E_Clubs.Clubs.Club", b =>
                 {
                     b.Property<Guid>("Id")
@@ -160,6 +189,25 @@ namespace E_Clubs.Migrations
                     b.ToTable("WorkPlans");
                 });
 
+            modelBuilder.Entity("E_Clubs.Attendances.Attendance", b =>
+                {
+                    b.HasOne("E_Clubs.Clubs.Club", "Club")
+                        .WithMany()
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("E_Clubs.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Club");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("E_Clubs.Clubs.Club", b =>
                 {
                     b.HasOne("E_Clubs.Users.User", "Professor")
@@ -174,7 +222,7 @@ namespace E_Clubs.Migrations
             modelBuilder.Entity("E_Clubs.Messages.Message", b =>
                 {
                     b.HasOne("E_Clubs.Clubs.Club", "Club")
-                        .WithMany()
+                        .WithMany("Messages")
                         .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -203,6 +251,8 @@ namespace E_Clubs.Migrations
 
             modelBuilder.Entity("E_Clubs.Clubs.Club", b =>
                 {
+                    b.Navigation("Messages");
+
                     b.Navigation("WorkPlans");
                 });
 #pragma warning restore 612, 618

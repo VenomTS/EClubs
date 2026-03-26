@@ -8,7 +8,9 @@ public class AttendanceRepository(AppDbContext dbContext)
 
     public async Task<List<Attendance>> GetAttendancesByClubId(Guid clubId)
     {
-        var attendances = await dbContext.Attendances.Where(attendance => attendance.ClubId == clubId).ToListAsync();
+        var attendances = await dbContext.Attendances.Where(attendance => attendance.ClubId == clubId)
+            .Include(attendance => attendance.User)
+            .ToListAsync();
         
         return attendances;
     }

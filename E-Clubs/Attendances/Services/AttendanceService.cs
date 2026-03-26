@@ -20,7 +20,24 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
 
         var attendances = await attendanceRepo.GetAttendancesByClubId(clubId);
         
-        return mapper.Map<List<GetAllAttendancesResponse>>(attendances);
+        // Can probably be automated using AutoMapper
+        var attendancesPerUser = attendances.GroupBy(attendance => attendance.User)
+            .Select(user => new GetAllAttendancesResponse
+            {
+                Student = new AttendanceUserResponse
+                {
+                    FirstName = user.First().User.FirstName,
+                    LastName = user.First().User.LastName,
+                },
+                AttendanceHistory = user.Select(attendance => new AttendanceHistoryResponse
+                {
+                    Date = attendance.Date,
+                    Status = attendance.Status
+                }).ToList()
+            });
+        
+        // return mapper.Map<List<GetAllAttendancesResponse>>(attendances);
+        return mapper.Map<List<GetAllAttendancesResponse>>(attendancesPerUser);
     }
 
     public async Task<OneOf<List<GetUserAttendanceResponse>, ClubNotFound, UserNotFound>>

@@ -11,14 +11,14 @@ namespace E_Clubs.Clubs;
 [Route("/api/[controller]")]
 public class ClubsController(ClubService clubService) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost(Name = "CreateClub")]
     public async Task<ActionResult<CreateClubResponse>> Create([FromBody] CreateClubRequest request)
     {
         var createdClub = await clubService.CreateClubAsync(request);
         return CreatedAtAction(nameof(GetById), new { id = createdClub.Id }, createdClub);
     }
 
-    [HttpGet]
+    [HttpGet(Name = "GetClubsForUser")]
     public async Task<ActionResult<GetAllClubsResponse>> GetAll([FromQuery] GetAllClubsQueryObject queryObject)
     {
         var clubs = await clubService.GetAllClubsAsync(queryObject);
@@ -26,7 +26,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
         return Ok(clubs);
     }
     
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetClubById")]
     public async Task<ActionResult<GetClubByIdResponse>> GetById(Guid id)
     {
         var result = await clubService.GetClubByIdAsync(id);

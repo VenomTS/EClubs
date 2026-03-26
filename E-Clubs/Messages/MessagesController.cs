@@ -8,7 +8,7 @@ namespace E_Clubs.Messages;
 [Route("api/clubs/{clubId:guid}/[controller]")]
 public class MessagesController(MessageService messageService) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet(Name = "GetMessagesForClub")]
     public async Task<ActionResult<IEnumerable<GetAllMessagesByClubIdResponse>>> GetAll([FromRoute] Guid clubId)
     {
         var result = await messageService.GetAllMessagesByClubIdAsync(clubId);
@@ -18,7 +18,7 @@ public class MessagesController(MessageService messageService) : ControllerBase
         return NotFound("Club not found");
     }
     
-    [HttpPost]
+    [HttpPost(Name = "CreateMessageForClub")]
     public async Task<ActionResult<CreateMessageResponse>> Create([FromRoute] Guid clubId,
         [FromBody] CreateMessageRequest request)
     {

@@ -12,7 +12,7 @@ public class ClubRepository(AppDbContext dbContext)
         await dbContext.Clubs.AddAsync(club);
         await dbContext.SaveChangesAsync();
 
-        return club;
+        return (await GetClubByIdAsync(club.Id))!;
     }
 
     public async Task<IEnumerable<Club>> GetAllClubsAsync(GetAllClubsQueryObject queryObject)

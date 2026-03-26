@@ -1,6 +1,6 @@
-namespace E_Clubs.Clubs.DTO;
+namespace E_Clubs.Attendances.DTO;
 
-public class ClubProfessorResponse
+public class AttendanceUserResponse
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

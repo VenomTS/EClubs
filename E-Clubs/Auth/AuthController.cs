@@ -8,7 +8,7 @@ namespace E_Clubs.Auth;
 [Route("/api/[controller]")]
 public class AuthController(UserService userService) : ControllerBase
 {
-    [HttpPost("register")]
+    [HttpPost("register", Name = "RegisterUser")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<ActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
@@ -25,7 +25,7 @@ public class AuthController(UserService userService) : ControllerBase
         }));
     }
 
-    [HttpPost("login")]
+    [HttpPost("login", Name = "LoginUser")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<LoginUserResponse>(StatusCodes.Status200OK)]
     public async Task<ActionResult<LoginUserResponse>> Login([FromBody] LoginUserRequest loginUserRequest)

@@ -9,7 +9,7 @@ namespace E_Clubs.WorkPlans;
 public class WorkPlansController(WorkPlansService workPlansService) : ControllerBase
 {
 
-    [HttpGet]
+    [HttpGet(Name = "GetWorkPlansForClub")]
     public async Task<ActionResult<IEnumerable<GetAllWorkPlansByClubIdResponse>>> Get([FromRoute] Guid clubId)
     {
         var result = await workPlansService.GetAllWorkPlansByClubIdAsync(clubId);
@@ -19,7 +19,7 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
         return NotFound("Club not found");
     }
 
-    [HttpPost]
+    [HttpPost(Name = "CreateWorkPlanForClub")]
     public async Task<ActionResult<CreateWorkPlanResponse>> Create([FromRoute] Guid clubId, [FromBody] CreateWorkPlanRequest request)
     {
         var result = await workPlansService.CreateWorkPlanAsync(clubId, request);
