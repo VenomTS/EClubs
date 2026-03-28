@@ -18,14 +18,38 @@ public class MessageRepository(AppDbContext dbContext)
     {
         await dbContext.Messages.AddAsync(message);
         await dbContext.SaveChangesAsync();
-
+        
+        await dbContext.Entry(message).ReloadAsync();
+        await dbContext.Entry(message).Reference(newMessage => newMessage.Sender).LoadAsync();
         return message;
     }
 
     public async Task<List<Message>> GetMessagesByClubIdAsync(Guid clubId)
     {
-        var messages = await dbContext.Messages.Where(message => message.ClubId == clubId).Include(message => message.Sender).ToListAsync();
+        var messages = await dbContext.Messages.Where(message => message.ClubId == clubId)
+            .Include(message => message.Sender)
+            .ToListAsync();
 
         return messages;
+    }
+
+    public async Task DeleteMessageAsync(Message message)
+    {
+        dbContext.Messages.Remove(message);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> UpdateMessageAsync(Guid messageId, Message newMessage)
+    {
+        var message = await dbContext.Messages
+            .FirstOrDefaultAsync(message => message.Id == messageId);
+
+        if (message == null)
+            return false;
+        
+        message.Content = newMessage.Content;
+        await dbContext.SaveChangesAsync();
+        
+        return true;
     }
 }

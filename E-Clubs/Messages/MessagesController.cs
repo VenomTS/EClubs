@@ -5,27 +5,67 @@ using Microsoft.AspNetCore.Mvc;
 namespace E_Clubs.Messages;
 
 [ApiController]
-[Route("api/clubs/{clubId:guid}/[controller]")]
+[Route("/api/[controller]")]
 public class MessagesController(MessageService messageService) : ControllerBase
 {
-    [HttpGet(Name = "GetMessagesForClub")]
-    public async Task<ActionResult<IEnumerable<GetAllMessagesByClubIdResponse>>> GetAll([FromRoute] Guid clubId)
+    [HttpGet("{messageId:guid}", Name = "GetMessageById")]
+    [ProducesResponseType<GetMessageByIdResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMessageById([FromRoute] Guid messageId)
     {
-        var result = await messageService.GetAllMessagesByClubIdAsync(clubId);
+        var result = await messageService.GetMessageByIdAsync(messageId);
 
-        if (result.IsT0)
-            return Ok(result.Value);
-        return NotFound("Club not found");
+        return result.Match<IActionResult>(
+            Ok,
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The message with ID {messageId} was not found",
+                Instance = HttpContext.Request.Path,
+            })
+        );
+    }
+
+    [HttpDelete(Name = "DeleteMessageById")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteMessageById([FromQuery] Guid messageId)
+    {
+        var result = await messageService.DeleteMessageByIdAsync(messageId);
+
+        return result.Match<IActionResult>(
+            _ => NoContent(),
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The message with ID {messageId} was not found",
+                Instance = HttpContext.Request.Path,
+            })
+        );
     }
     
-    [HttpPost(Name = "CreateMessageForClub")]
-    public async Task<ActionResult<CreateMessageResponse>> Create([FromRoute] Guid clubId,
-        [FromBody] CreateMessageRequest request)
+    [HttpPut("{messageId:guid}", Name = "UpdateMessageById")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateMessageById([FromRoute] Guid messageId, [FromBody] UpdateMessageRequest request)
     {
-        var result = await messageService.CreateMessageAsync(clubId, request);
+        var result = await messageService.UpdateMessageByIdAsync(messageId, request);
 
-        if (result.IsT0)
-            return Ok(result.Value);
-        return NotFound("Club not found");
+        return result.Match<IActionResult>(
+            _ => NoContent(),
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The message with ID {messageId} was not found",
+                Instance = HttpContext.Request.Path,
+            })
+        );
     }
+    
 }

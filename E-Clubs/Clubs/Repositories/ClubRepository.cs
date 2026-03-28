@@ -32,8 +32,6 @@ public class ClubRepository(AppDbContext dbContext)
             dbContext.Clubs.Where(club => club.ClubStudents.Any(clubStudent => clubStudent.StudentId == studentId))
                 .Include(club => club.Professor);
         
-        Console.WriteLine(allClubs.ToQueryString());
-        
         return await allClubs.ToListAsync();
 
     }

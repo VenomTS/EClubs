@@ -28,7 +28,7 @@ public class AuthController(UserService userService) : ControllerBase
     [HttpPost("login", Name = "LoginUser")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<LoginUserResponse>(StatusCodes.Status200OK)]
-    public async Task<ActionResult<LoginUserResponse>> Login([FromBody] LoginUserRequest loginUserRequest)
+    public async Task<IActionResult> Login([FromBody] LoginUserRequest loginUserRequest)
     {
         var result = await userService.LoginAsync(loginUserRequest);
         
