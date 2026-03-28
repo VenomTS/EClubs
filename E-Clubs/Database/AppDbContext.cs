@@ -15,6 +15,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Message> Messages { get; set; }
     public DbSet<Attendance> Attendances { get; set; }
 
+    public DbSet<ClubStudent> ClubStudents { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -22,5 +24,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         builder.Entity<Club>().Property(club => club.CreatedAt).ValueGeneratedOnAdd().HasDefaultValueSql("NOW()");
         builder.Entity<Message>().Property(message => message.SentAt).ValueGeneratedOnAdd().HasDefaultValueSql("NOW()");
         builder.Entity<Attendance>().Property(attendance => attendance.Date).ValueGeneratedOnAdd().HasDefaultValueSql("NOW()");
+        
+        builder.Entity<ClubStudent>().HasKey(clubStudent => new { clubStudent.ClubId, clubStudent.StudentId });
     }
 }

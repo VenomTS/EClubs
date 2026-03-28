@@ -19,7 +19,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
     }
 
     [HttpGet(Name = "GetClubsForUser")]
-    public async Task<ActionResult<GetAllClubsResponse>> GetAll([FromQuery] GetAllClubsQueryObject queryObject)
+    public async Task<ActionResult<IEnumerable<GetAllClubsResponse>>> GetAll([FromQuery] GetAllClubsQueryObject queryObject)
     {
         var clubs = await clubService.GetAllClubsAsync(queryObject);
 

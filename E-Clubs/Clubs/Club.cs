@@ -19,5 +19,6 @@ public class Club
     public required User Professor { get; set; }
     public List<WorkPlan> WorkPlans { get; set; } = [];
     public List<Message> Messages { get; set; } = [];
+    public List<ClubStudent> ClubStudents { get; set; } = [];
 
 }

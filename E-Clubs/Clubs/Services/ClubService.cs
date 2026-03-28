@@ -22,9 +22,12 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo)
 
     public async Task<IEnumerable<GetAllClubsResponse>> GetAllClubsAsync(GetAllClubsQueryObject queryObject)
     {
-        var clubs = await clubRepo.GetAllClubsAsync(queryObject);
+        var professorClubs = await clubRepo.GetClubsByProfessorIdAsync(queryObject.UserId);
+        var studentClubs = await clubRepo.GetClubsByStudentIdAsync(queryObject.UserId);
 
-        var clubsDto = clubs.Select(mapper.Map<GetAllClubsResponse>);
+        var allClubs = professorClubs.Concat(studentClubs);
+
+        var clubsDto = allClubs.Select(mapper.Map<GetAllClubsResponse>);
 
         return clubsDto;
     }

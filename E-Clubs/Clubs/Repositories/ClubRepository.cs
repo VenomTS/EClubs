@@ -11,20 +11,31 @@ public class ClubRepository(AppDbContext dbContext)
     {
         await dbContext.Clubs.AddAsync(club);
         await dbContext.SaveChangesAsync();
-
-        return (await GetClubByIdAsync(club.Id))!;
+        
+        var createdClub = await GetClubByIdAsync(club.Id);
+        return createdClub ?? throw new Exception("Club was not created");
     }
 
-    public async Task<IEnumerable<Club>> GetAllClubsAsync(GetAllClubsQueryObject queryObject)
+    public async Task<IEnumerable<Club>> GetClubsByProfessorIdAsync(Guid? professorId)
     {
-        IQueryable<Club> allClubs = dbContext.Clubs.AsNoTracking().AsQueryable().Include(club => club.Professor);
+        var allClubs = dbContext.Clubs.AsNoTracking().Include(club => club.Professor).AsQueryable();
         
-        // Trenutno radi samo za profesore
-        // Potrebno dodati da radi za studente
-        if (queryObject.UserId != null)
-            allClubs = allClubs.Where(club => club.ProfessorId == queryObject.UserId);
-
+        if(professorId.HasValue)
+            allClubs = allClubs.Where(club => club.ProfessorId == professorId);
+        
         return await allClubs.ToListAsync();
+    }
+
+    public async Task<IEnumerable<Club>> GetClubsByStudentIdAsync(Guid? studentId)
+    {
+        var allClubs =
+            dbContext.Clubs.Where(club => club.ClubStudents.Any(clubStudent => clubStudent.StudentId == studentId))
+                .Include(club => club.Professor);
+        
+        Console.WriteLine(allClubs.ToQueryString());
+        
+        return await allClubs.ToListAsync();
+
     }
 
     public async Task<Club?> GetClubByIdAsync(Guid id) => await dbContext.Clubs
