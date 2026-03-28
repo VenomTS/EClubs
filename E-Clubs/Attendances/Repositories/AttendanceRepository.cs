@@ -9,7 +9,7 @@ public class AttendanceRepository(AppDbContext dbContext)
     public async Task<List<Attendance>> GetAttendancesByClubId(Guid clubId)
     {
         var attendances = await dbContext.Attendances.Where(attendance => attendance.ClubId == clubId)
-            .Include(attendance => attendance.User)
+            .Include(attendance => attendance.Student)
             .ToListAsync();
         
         return attendances;
@@ -17,7 +17,7 @@ public class AttendanceRepository(AppDbContext dbContext)
 
     public async Task<List<Attendance>> GetUserAttendancesByClubId(Guid clubId, Guid userId)
     {
-        var attendances = await dbContext.Attendances.Where(attendance => attendance.ClubId == clubId && attendance.UserId == userId).ToListAsync();
+        var attendances = await dbContext.Attendances.Where(attendance => attendance.ClubId == clubId && attendance.StudentId == userId).ToListAsync();
         
         return attendances;
     }

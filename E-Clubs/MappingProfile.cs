@@ -38,14 +38,8 @@ public class MappingProfile : Profile
         CreateMap<Message, GetMessageByIdResponse>().ReverseMap();
         CreateMap<Message, ClubMessageResponse>().ReverseMap();
         
-        CreateMap<Attendance, GetAllAttendancesResponse>()
-            .ForMember(destination => destination.Student, 
-                option => option.MapFrom(source => source.User))
-            .ReverseMap();
-        CreateMap<Attendance, GetUserAttendanceResponse>()
-            .ForMember(dest => dest.Student, 
-                option => option.MapFrom(src => src.User))
-            .ReverseMap();
+        CreateMap<Attendance, GetAllAttendancesResponse>().ReverseMap();
+        CreateMap<Attendance, GetUserAttendanceResponse>().ReverseMap();
         CreateMap<Attendance, RegisterAttendanceRequest>().ReverseMap();
     }
 }

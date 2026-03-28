@@ -21,13 +21,13 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
         var attendances = await attendanceRepo.GetAttendancesByClubId(clubId);
         
         // Can probably be automated using AutoMapper
-        var attendancesPerUser = attendances.GroupBy(attendance => attendance.User)
+        var attendancesPerUser = attendances.GroupBy(attendance => attendance.Student)
             .Select(user => new GetAllAttendancesResponse
             {
                 Student = new AttendanceUserResponse
                 {
-                    FirstName = user.First().User.FirstName,
-                    LastName = user.First().User.LastName,
+                    FirstName = user.First().Student.FirstName,
+                    LastName = user.First().Student.LastName,
                 },
                 AttendanceHistory = user.Select(attendance => new AttendanceHistoryResponse
                 {
