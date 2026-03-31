@@ -39,14 +39,14 @@ namespace E_Clubs.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("StudentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClubId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Attendances");
                 });
@@ -212,15 +212,15 @@ namespace E_Clubs.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("E_Clubs.Users.User", "User")
+                    b.HasOne("E_Clubs.Users.User", "Student")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Club");
 
-                    b.Navigation("User");
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("E_Clubs.Clubs.Club", b =>
@@ -237,7 +237,7 @@ namespace E_Clubs.Migrations
             modelBuilder.Entity("E_Clubs.Clubs.ClubStudent", b =>
                 {
                     b.HasOne("E_Clubs.Clubs.Club", "Club")
-                        .WithMany()
+                        .WithMany("ClubStudents")
                         .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -285,6 +285,8 @@ namespace E_Clubs.Migrations
 
             modelBuilder.Entity("E_Clubs.Clubs.Club", b =>
                 {
+                    b.Navigation("ClubStudents");
+
                     b.Navigation("Messages");
 
                     b.Navigation("WorkPlans");

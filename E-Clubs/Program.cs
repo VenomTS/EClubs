@@ -59,6 +59,7 @@ builder.Services.AddScoped<AttendanceService>();
 // Repositories
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<ClubRepository>();
+builder.Services.AddScoped<ClubStudentRepository>();
 builder.Services.AddScoped<WorkPlansRepository>();
 builder.Services.AddScoped<MessageRepository>();
 builder.Services.AddScoped<AttendanceRepository>();
