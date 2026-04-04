@@ -54,7 +54,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
         var result = await clubService.GetStudentsByClubIdAsync(clubId);
 
         return result.Match<IActionResult>(
-            _ => Ok(result),
+            Ok,
             _ => NotFound(new ProblemDetails
             {
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
