@@ -30,15 +30,13 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         if(!clubExists)
             return new ClubNotFound();
 
+        var existingWorkPlanCount = await workPlansRepo.GetWorkPlanCountByClubIdAsync(clubId);
+        
         var workPlanModel = mapper.Map<WorkPlan>(request);
         workPlanModel.ClubId = clubId;
         workPlanModel.Status = WorkPlanStatus.Scheduled;
         workPlanModel.RealizationDate = null;
-
-        var exists = await workPlansRepo.WorkPlanExistsAsync(workPlanModel);
-        
-        if(exists)
-            return new WorkPlanAlreadyExists();
+        workPlanModel.LessonNumber = existingWorkPlanCount + 1;
         
         var createdWorkPlan = await workPlansRepo.CreateWorkPlanAsync(workPlanModel);
 

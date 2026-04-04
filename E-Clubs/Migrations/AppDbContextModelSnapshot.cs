@@ -176,11 +176,25 @@ namespace E_Clubs.Migrations
                     b.Property<Guid>("ClubId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Domain")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Note")
+                    b.Property<int>("DomainNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Indicator")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LearningOutcome")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("LessonNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LessonUnit")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -192,10 +206,6 @@ namespace E_Clubs.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

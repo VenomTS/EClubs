@@ -34,6 +34,23 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
         return clubsDto;
     }
 
+    public async Task<OneOf<IEnumerable<GetStudentByClubIdResponse>, ClubNotFound>> GetStudentsByClubIdAsync(Guid clubId)
+    {
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        if (!clubExists)
+            return new ClubNotFound();
+
+        var clubStudents = await clubStudentRepo.GetStudentsByClubIdAsync(clubId);
+
+        var students = clubStudents.Select(x => new GetStudentByClubIdResponse
+        {
+            FirstName = x.Student.FirstName,
+            LastName = x.Student.LastName,
+        }).ToList();
+
+        return students;
+    }
+
     public async Task<OneOf<GetClubByIdResponse, ClubNotFound>> GetClubByIdAsync(Guid id)
     {
         var club = await clubRepo.GetClubByIdAsync(id);

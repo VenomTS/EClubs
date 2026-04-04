@@ -34,15 +34,31 @@ public class AttendancesController(AttendanceService attendanceService) : Contro
     }
     
     [HttpPost(Name = "MarkStudentPresent")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Register([FromRoute] Guid clubId, [FromBody] RegisterAttendanceRequest request)
     {
         var result = await attendanceService.RegisterAttendanceAsync(clubId, request);
 
-        if (result.IsT0)
-            return Ok();
-        if (result.IsT1)
-            return NotFound("Club not found");
-        return NotFound("User not found");
+        return result.Match<IActionResult>(
+            _ => NoContent(),
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The club with ID {clubId} was not found",
+                Instance = HttpContext.Request.Path,
+            }),
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The student with ID {request.StudentId} was not found",
+                Instance = HttpContext.Request.Path,
+            })
+        );
     }
 
     // Call this when finished taking attendance

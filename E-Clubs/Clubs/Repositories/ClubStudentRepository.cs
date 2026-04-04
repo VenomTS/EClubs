@@ -17,6 +17,16 @@ public class ClubStudentRepository(AppDbContext dbContext)
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<List<ClubStudent>> GetStudentsByClubIdAsync(Guid clubId)
+    {
+        var students = await dbContext.ClubStudents
+            .Where(clubStudent => clubStudent.ClubId == clubId)
+            .Include(x => x.Student)
+            .ToListAsync();
+
+        return students;
+    }
+
     public async Task<bool> IsStudentInClub(Guid clubId, Guid studentId)
     {
         return await dbContext.ClubStudents.AnyAsync(x => x.ClubId == clubId && x.StudentId == studentId);

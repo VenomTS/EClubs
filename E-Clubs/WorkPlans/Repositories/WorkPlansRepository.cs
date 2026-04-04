@@ -19,8 +19,10 @@ public class WorkPlansRepository(AppDbContext dbContext)
         return workPlan;
     }
 
-    public async Task<bool> WorkPlanExistsAsync(WorkPlan workPlan) =>
-         await dbContext.WorkPlans.AnyAsync(x => x.ClubId == workPlan.ClubId && x.Title == workPlan.Title);
+    public async Task<int> GetWorkPlanCountByClubIdAsync(Guid clubId)
+    {
+        return await dbContext.WorkPlans.Where(x => x.ClubId == clubId).CountAsync();
+    }
     
     public async Task<bool> WorkPlanExistsAsync(Guid workPlanId) => await dbContext.WorkPlans.AnyAsync(workPlan => workPlan.Id == workPlanId);
 }

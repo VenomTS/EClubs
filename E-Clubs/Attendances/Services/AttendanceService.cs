@@ -62,7 +62,7 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
         if(!clubExists)
             return new ClubNotFound();
         
-        var userExists = await userRepo.UserExistsAsync(request.UserId);
+        var userExists = await userRepo.UserExistsAsync(request.StudentId);
         if (!userExists)
             return new UserNotFound();
 

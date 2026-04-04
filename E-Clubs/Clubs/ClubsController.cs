@@ -46,6 +46,26 @@ public class ClubsController(ClubService clubService) : ControllerBase
         return Ok(clubs);
     }
 
+    [HttpGet("{clubId:guid}/students", Name = "GetStudentsInClub")]
+    [ProducesResponseType<IEnumerable<GetStudentByClubIdResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetStudents([FromRoute] Guid clubId)
+    {
+        var result = await clubService.GetStudentsByClubIdAsync(clubId);
+
+        return result.Match<IActionResult>(
+            _ => Ok(result),
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The club with ID {clubId} was not found",
+                Instance = HttpContext.Request.Path,
+            })
+        );
+    }
+
     [HttpPost("{clubId:guid}/students/{studentId:guid}", Name = "AddStudentToClub")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
