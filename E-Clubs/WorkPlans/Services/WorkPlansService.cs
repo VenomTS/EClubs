@@ -44,4 +44,16 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
 
         return workPlanDto;
     }
+
+    public async Task<OneOf<GetCurrentWorkPlanResponse, ClubNotFound, WorkPlanNotFound>> GetCurrentWorkPlanByClubIdAsync(
+        Guid clubId)
+    {
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        if (!clubExists)
+            return new ClubNotFound();
+
+        var workPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
+
+        return workPlan == null ? mapper.Map<GetCurrentWorkPlanResponse>(workPlan) : new WorkPlanNotFound();
+    }
 }

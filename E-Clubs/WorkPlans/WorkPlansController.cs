@@ -30,4 +30,27 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
             return NotFound("Club not found");
         return Conflict("Same WorkPlan already exists for the given club");
     }
+
+    [HttpGet("/current", Name = "GetCurrentWorkPlan")]
+    [ProducesResponseType<GetCurrentWorkPlanResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> GetCurrentWorkPlan([FromRoute] Guid clubId)
+    {
+        var result = await workPlansService.GetCurrentWorkPlanByClubIdAsync(clubId);
+        
+        return result.Match<IActionResult>(
+            Ok,
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The club with ID {clubId} was not found",
+                Instance = HttpContext.Request.Path,
+            }),
+            _ => NoContent()
+        );
+    }
+    
 }
