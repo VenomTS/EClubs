@@ -10,25 +10,43 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
 {
 
     [HttpGet(Name = "GetWorkPlansForClub")]
-    public async Task<ActionResult<IEnumerable<GetAllWorkPlansByClubIdResponse>>> Get([FromRoute] Guid clubId)
+    [ProducesResponseType<IEnumerable<GetAllWorkPlansByClubIdResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get([FromRoute] Guid clubId)
     {
         var result = await workPlansService.GetAllWorkPlansByClubIdAsync(clubId);
 
-        if (result.IsT0)
-            return Ok(result.Value);
-        return NotFound("Club not found");
+        return result.Match<IActionResult>(
+            Ok,
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The club with ID {clubId} was not found",
+                Instance = HttpContext.Request.Path,
+            })
+        );
     }
 
     [HttpPost(Name = "CreateWorkPlanForClub")]
-    public async Task<ActionResult<CreateWorkPlanResponse>> Create([FromRoute] Guid clubId, [FromBody] CreateWorkPlanRequest request)
+    [ProducesResponseType<IEnumerable<CreateWorkPlanResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Create([FromRoute] Guid clubId, [FromBody] CreateWorkPlanRequest request)
     {
         var result = await workPlansService.CreateWorkPlanAsync(clubId, request);
 
-        if (result.IsT0)
-            return Ok(result.Value);
-        if (result.IsT1)
-            return NotFound("Club not found");
-        return Conflict("Same WorkPlan already exists for the given club");
+        return result.Match<IActionResult>(
+            Ok,
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The club with ID {clubId} was not found",
+                Instance = HttpContext.Request.Path,
+            })
+        );
     }
 
     [HttpGet("/current", Name = "GetCurrentWorkPlan")]

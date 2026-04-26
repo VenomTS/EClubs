@@ -23,7 +23,7 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         return workPlansDto.ToList();
     }
 
-    public async Task<OneOf<CreateWorkPlanResponse, ClubNotFound, WorkPlanAlreadyExists>> CreateWorkPlanAsync(
+    public async Task<OneOf<CreateWorkPlanResponse, ClubNotFound>> CreateWorkPlanAsync(
         Guid clubId, CreateWorkPlanRequest request)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
