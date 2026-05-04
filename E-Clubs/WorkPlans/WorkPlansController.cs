@@ -30,7 +30,7 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
     }
 
     [HttpPost(Name = "CreateWorkPlanForClub")]
-    [ProducesResponseType<IEnumerable<CreateWorkPlanResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<CreateWorkPlanResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create([FromRoute] Guid clubId, [FromBody] CreateWorkPlanRequest request)
     {
@@ -49,7 +49,7 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
         );
     }
 
-    [HttpGet("/current", Name = "GetCurrentWorkPlan")]
+    [HttpGet("current", Name = "GetCurrentWorkPlan")]
     [ProducesResponseType<GetCurrentWorkPlanResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -68,6 +68,26 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
                 Instance = HttpContext.Request.Path,
             }),
             _ => NoContent()
+        );
+    }
+    
+    [HttpGet("domains", Name = "GetDomainsByClubId")]
+    [ProducesResponseType<IEnumerable<GetDomainsResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GetDomains([FromRoute] Guid clubId)
+    {
+        var result = await workPlansService.GetDomainsByClubIdAsync(clubId);
+
+        return result.Match<ActionResult>(
+            Ok,
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The club with ID {clubId} was not found",
+                Instance = HttpContext.Request.Path,
+            })
         );
     }
     

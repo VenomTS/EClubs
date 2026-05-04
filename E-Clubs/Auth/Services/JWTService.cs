@@ -1,14 +1,21 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using E_Clubs.Enums;
 using E_Clubs.Users;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace E_Clubs.Auth.Services;
 
 public class JWTService(IConfiguration config)
 {
+    public static DateTime GetExpirationDate()
+    {
+        return DateTime.Now.AddHours(1);
+    }
+    
     private static List<Claim> GenerateClaims(User user)
     {
         var claims = new List<Claim>
@@ -19,7 +26,7 @@ public class JWTService(IConfiguration config)
         };
 
         var userRoles = Enum.GetValues<Roles>()
-            .Where(role => role != Roles.Default && user.Roles.HasFlag(role));
+            .Where(role => user.Roles.HasFlag(role));
         
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
         return claims;
@@ -44,12 +51,20 @@ public class JWTService(IConfiguration config)
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddHours(1),
+            Expires = GetExpirationDate(),
             SigningCredentials = signingCredentials,
             Issuer = config["JWT:Issuer"],
             Audience = config["JWT:Audience"],
         };
         return tokenDescriptor;
+    }
+
+    public static string GetIdFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadToken(token);
+
+        return jsonToken is not JwtSecurityToken tokenS ? throw new Exception("Invalid token") : tokenS.Subject;
     }
 
     public string GenerateToken(User user)

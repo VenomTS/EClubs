@@ -39,7 +39,10 @@ public class ClubMessagesController(MessageService messageService) : ControllerB
         var result = await messageService.CreateMessageAsync(clubId, request);
 
         return result.Match<IActionResult>(
-            message => CreatedAtRoute("GetMessageById",  new { id = message.Id }, message),
+            message => CreatedAtRoute(
+                nameof(MessagesController.GetMessageById),
+                new { messageId = message.Id },
+                message),
             _ => NotFound(new ProblemDetails
             {
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",

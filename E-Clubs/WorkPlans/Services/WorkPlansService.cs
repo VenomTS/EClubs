@@ -49,11 +49,32 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         Guid clubId)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        
         if (!clubExists)
             return new ClubNotFound();
 
         var workPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
 
-        return workPlan == null ? mapper.Map<GetCurrentWorkPlanResponse>(workPlan) : new WorkPlanNotFound();
+        return workPlan == null ? new WorkPlanNotFound() : mapper.Map<GetCurrentWorkPlanResponse>(workPlan);
+    }
+
+    public async Task<OneOf<IEnumerable<GetDomainsResponse>, ClubNotFound>> GetDomainsByClubIdAsync(Guid clubId)
+    {
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        
+        if(!clubExists)
+            return new ClubNotFound();
+
+        var workPlans = await workPlansRepo.GetWorkPlansByClubIdAsync(clubId);
+
+        workPlans = workPlans.DistinctBy(workPlan => workPlan.Domain).ToList();
+
+        var domains = workPlans.Select(x => new GetDomainsResponse
+        {
+            DomainNumber = x.DomainNumber,
+            Domain = x.Domain,
+        }).ToList();
+
+        return domains;
     }
 }

@@ -21,5 +21,7 @@ public class UserRepository(AppDbContext dbContext)
         await dbContext.Users.AnyAsync(user => user.Mail == mail);
     
     public async Task<bool> UserExistsAsync(Guid userId) => await dbContext.Users.AnyAsync(user => user.Id == userId);
-    
+
+    public async Task<User?> GetUserByIdAsync(Guid userId) => 
+        await dbContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
 }

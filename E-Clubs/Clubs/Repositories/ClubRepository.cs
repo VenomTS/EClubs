@@ -1,4 +1,3 @@
-using E_Clubs.Clubs.QueryObjects;
 using E_Clubs.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,30 +15,22 @@ public class ClubRepository(AppDbContext dbContext)
         return createdClub ?? throw new Exception("Club was not created");
     }
 
-    public async Task<IEnumerable<Club>> GetClubsByProfessorIdAsync(Guid? professorId)
+    public async Task<IEnumerable<Club>> GetClubsByUserIdAsync(Guid? userId)
     {
-        var allClubs = dbContext.Clubs.AsNoTracking().Include(club => club.Professor).AsQueryable();
+        var clubs = dbContext.Clubs.AsNoTracking()
+            .Include(club => club.Professor)
+            .AsQueryable();
         
-        if(professorId.HasValue)
-            allClubs = allClubs.Where(club => club.ProfessorId == professorId);
+        if(userId.HasValue)
+            clubs = clubs.Where(club => club.ProfessorId == userId.Value || club.ClubStudents.Any(clubStudent => clubStudent.StudentId == userId));
         
-        return await allClubs.ToListAsync();
-    }
-
-    public async Task<IEnumerable<Club>> GetClubsByStudentIdAsync(Guid? studentId)
-    {
-        var allClubs =
-            dbContext.Clubs.Where(club => club.ClubStudents.Any(clubStudent => clubStudent.StudentId == studentId))
-                .Include(club => club.Professor);
-        
-        return await allClubs.ToListAsync();
-
+        return await clubs.ToListAsync();
     }
 
     public async Task<Club?> GetClubByIdAsync(Guid id) => await dbContext.Clubs
         .Include(club => club.Professor)
         .Include(club => club.WorkPlans)
-        .Include(club => club.Messages)
+        .Include(club => club.Messages).ThenInclude(message => message.Sender)
         .FirstOrDefaultAsync(club => club.Id == id);
     
     public async Task<bool> ClubExistsAsync(Guid clubId) => await dbContext.Clubs.AnyAsync(club => club.Id == clubId);

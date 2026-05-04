@@ -27,6 +27,7 @@ public class MessageService(IMapper mapper, MessageRepository messageRepo, ClubR
             return new ClubNotFound();
         
         var messages = await messageRepo.GetMessagesByClubIdAsync(clubId);
+        
         return mapper.Map<List<GetAllMessagesByClubIdResponse>>(messages);
     }
     

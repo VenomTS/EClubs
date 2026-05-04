@@ -1,5 +1,7 @@
+using E_Clubs.Auth.Services;
 using E_Clubs.Users.DTO;
 using E_Clubs.Users.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Auth;
@@ -8,6 +10,34 @@ namespace E_Clubs.Auth;
 [Route("/api/[controller]")]
 public class AuthController(UserService userService) : ControllerBase
 {
+    private const string CookieName = "TOKEN";
+
+    [HttpGet("me", Name = "GetMe")]
+    [ProducesResponseType<GetMeResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize]
+    public async Task<ActionResult> GetMe()
+    {
+        var token = Request.Cookies[CookieName];
+        if(token == null)
+            return Unauthorized();
+        
+        var result = await userService.GetMeAsync(token);
+        
+        return result.Match<ActionResult>(
+            Ok, 
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"There is no user related to the token provided",
+                Instance = HttpContext.Request.Path,
+            })
+        );
+    }
+    
     [HttpPost("register", Name = "RegisterUser")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
@@ -27,11 +57,20 @@ public class AuthController(UserService userService) : ControllerBase
 
     [HttpPost("login", Name = "LoginUser")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType<LoginUserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Login([FromBody] LoginUserRequest loginUserRequest)
     {
         var result = await userService.LoginAsync(loginUserRequest);
+
+        if (!result.IsT0) return Unauthorized();
         
-        return result.Match<ActionResult>(Ok, _ => Unauthorized("Invalid mail or password"));
+        Response.Cookies.Append(CookieName, result.AsT0, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = JWTService.GetExpirationDate(),
+        });
+        return NoContent();
     }
 }

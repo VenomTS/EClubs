@@ -1,6 +1,8 @@
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Clubs.QueryObjects;
 using E_Clubs.Clubs.Services;
+using E_Clubs.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Clubs;
@@ -41,7 +43,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
     [ProducesResponseType<IEnumerable<GetAllClubsResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllClubsQueryObject queryObject)
     {
-        var clubs = await clubService.GetAllClubsAsync(queryObject);
+        var clubs = await clubService.GetClubsByUserIdAsync(queryObject);
 
         return Ok(clubs);
     }
@@ -137,15 +139,4 @@ public class ClubsController(ClubService clubService) : ControllerBase
     {
         return BadRequest("Feature not implemented");
     }
-    
-    //
-    // public async Task Update()
-    // {
-    //     
-    // }
-    //
-    // public async Task Delete(int id)
-    // {
-    //     
-    // }
 }

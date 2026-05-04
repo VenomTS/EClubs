@@ -21,9 +21,9 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -43,6 +43,15 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["JWT:Issuer"],
         ValidAudience = builder.Configuration["JWT:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"] ?? throw new InvalidOperationException()))
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            context.Token = context.Request.Cookies["TOKEN"];
+            return Task.CompletedTask;
+        }
     };
 });
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -65,7 +74,13 @@ builder.Services.AddScoped<MessageRepository>();
 builder.Services.AddScoped<AttendanceRepository>();
 
 // CORS
-builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy =>
+{
+    policy.WithOrigins("http://localhost:3000", "http://109.237.44.64:3000", "http://192.168.1.101:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+}));
 
 builder.Services.AddAutoMapper(_ => { }, typeof(MappingProfile));
 
@@ -80,7 +95,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

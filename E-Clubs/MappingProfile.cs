@@ -31,6 +31,7 @@ public class MappingProfile : Profile
         CreateMap<WorkPlan, GetCurrentWorkPlanResponse>().ReverseMap();
         CreateMap<WorkPlan, GetAllWorkPlansByClubIdResponse>().ReverseMap();
         CreateMap<WorkPlan, ClubWorkPlansResponse>().ReverseMap();
+        CreateMap<WorkPlan, GetDomainsResponse>().ReverseMap();
         
         CreateMap<Message, CreateMessageRequest>().ReverseMap();
         CreateMap<Message, UpdateMessageRequest>().ReverseMap();

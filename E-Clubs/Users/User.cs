@@ -8,7 +8,7 @@ public class User
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string Mail { get; set; } = string.Empty;
-    public Roles Roles { get; set; } = Roles.Default;
+    public Roles Roles { get; set; } = Roles.Student;
     public byte[] PasswordHash { get; set; } = [];
     public byte[] PasswordSalt { get; set; } = [];
 }
