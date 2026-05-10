@@ -4,5 +4,4 @@ public enum WorkPlanStatus
 {
     Scheduled,
     Completed,
-    Unrealized,
 }

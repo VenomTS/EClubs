@@ -31,8 +31,7 @@ public class MappingProfile : Profile
         CreateMap<Message, UpdateMessageRequest>().ReverseMap();
         CreateMap<Message, GetMessageResponse>().ReverseMap();
         
-        CreateMap<Attendance, GetAllAttendancesResponse>().ReverseMap();
-        CreateMap<Attendance, GetUserAttendanceResponse>().ReverseMap();
+        CreateMap<Attendance, GetAttendanceResponse>().ReverseMap();
         CreateMap<Attendance, RegisterAttendanceRequest>().ReverseMap();
     }
 }

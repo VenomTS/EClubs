@@ -11,7 +11,7 @@ public class AttendancesController(AttendanceService attendanceService, ClubServ
 {
     // This one should only be accessible by the professor
     [HttpGet(Name = "GetAttendancesForClub")]
-    public async Task<ActionResult<List<GetAllAttendancesResponse>>> GetAll([FromRoute] Guid clubId)
+    public async Task<ActionResult<List<GetAttendanceResponse>>> GetAll([FromRoute] Guid clubId)
     {
         var result = await attendanceService.GetAllAttendancesByClubIdAsync(clubId);
 
@@ -22,7 +22,7 @@ public class AttendancesController(AttendanceService attendanceService, ClubServ
 
     // This one should only be accessible by the student
     [HttpGet("{userId:guid}", Name = "GetUserAttendancesForClub")]
-    public async Task<ActionResult<List<GetUserAttendanceResponse>>> Get([FromRoute] Guid clubId, [FromRoute] Guid userId)
+    public async Task<ActionResult<GetAttendanceResponse>> Get([FromRoute] Guid clubId, [FromRoute] Guid userId)
     {
         var result = await attendanceService.GetUserAttendanceByClubIdAsync(clubId, userId);
 

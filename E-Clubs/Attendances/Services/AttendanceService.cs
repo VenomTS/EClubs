@@ -14,7 +14,7 @@ namespace E_Clubs.Attendances.Services;
 
 public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRepo, ClubRepository clubRepo, UserRepository userRepo, WorkPlansRepository workPlansRepo, ClubStudentRepository clubStudentRepo)
 {
-    public async Task<OneOf<List<GetAllAttendancesResponse>, ClubNotFound>> GetAllAttendancesByClubIdAsync(Guid clubId)
+    public async Task<OneOf<List<GetAttendanceResponse>, ClubNotFound>> GetAllAttendancesByClubIdAsync(Guid clubId)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
         if(!clubExists)
@@ -24,10 +24,11 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
         
         // Can probably be automated using AutoMapper
         var attendancesPerUser = attendances.GroupBy(attendance => attendance.Student)
-            .Select(user => new GetAllAttendancesResponse
+            .Select(user => new GetAttendanceResponse
             {
                 Student = new GetUserResponse
                 {
+                    Id = user.First().Student.Id,
                     FirstName = user.First().Student.FirstName,
                     LastName = user.First().Student.LastName,
                 },
@@ -39,23 +40,38 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
             });
         
         // return mapper.Map<List<GetAllAttendancesResponse>>(attendances);
-        return mapper.Map<List<GetAllAttendancesResponse>>(attendancesPerUser);
+        return mapper.Map<List<GetAttendanceResponse>>(attendancesPerUser);
     }
 
-    public async Task<OneOf<List<GetUserAttendanceResponse>, ClubNotFound, UserNotFound>>
+    public async Task<OneOf<GetAttendanceResponse, ClubNotFound, UserNotFound>>
         GetUserAttendanceByClubIdAsync(Guid clubId, Guid userId)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
         if(!clubExists)
             return new ClubNotFound();
-
-        var userExists = await userRepo.UserExistsAsync(userId);
-        if (!userExists)
+        
+        var user = await userRepo.GetUserByIdAsync(userId);
+        if (user == null)
             return new UserNotFound();
 
         var attendances = await attendanceRepo.GetUserAttendancesByClubId(clubId, userId);
-        
-        return mapper.Map<List<GetUserAttendanceResponse>>(attendances);
+
+        var attendancesDto = new GetAttendanceResponse
+        {
+            Student = new GetUserResponse
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+            },
+            AttendanceHistory = attendances.Select(x => new AttendanceHistoryResponse
+            {
+                Date = x.Date,
+                Status = x.Status,
+            }).ToList()
+        };
+
+        return attendancesDto;
     }
 
     public async Task<OneOf<Success, ClubNotFound, UserNotFound>> RegisterAttendanceAsync(Guid clubId, RegisterAttendanceRequest request)

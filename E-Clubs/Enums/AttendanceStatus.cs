@@ -4,6 +4,5 @@ namespace E_Clubs.Enums;
 public enum AttendanceStatus
 {
     Present,
-    Absent,
-    Unrealized
+    Absent
 }
