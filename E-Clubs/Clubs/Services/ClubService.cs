@@ -4,12 +4,13 @@ using E_Clubs.Clubs.QueryObjects;
 using E_Clubs.Clubs.Repositories;
 using E_Clubs.OneOfTypes;
 using E_Clubs.Users.Repositories;
+using E_Clubs.WorkPlans.Repositories;
 using OneOf;
 using OneOf.Types;
 
 namespace E_Clubs.Clubs.Services;
 
-public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, UserRepository userRepo)
+public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, UserRepository userRepo, WorkPlansRepository workPlansRepo)
 {
     public async Task<CreateClubResponse> CreateClubAsync(CreateClubRequest request)
     {
@@ -41,6 +42,7 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
 
         var students = clubStudents.Select(x => new GetStudentByClubIdResponse
         {
+            Id = x.StudentId,
             FirstName = x.Student.FirstName,
             LastName = x.Student.LastName,
         }).ToList();
@@ -113,5 +115,24 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
         
         await clubStudentRepo.DeleteStudentFromClub(clubStudent);
         return new Success();
+    }
+
+    public async Task ConcludeWorkPlan(Guid clubId)
+    {
+        var club = await clubRepo.GetClubByIdAsync(clubId);
+        if (club == null)
+            throw new Exception("Club does not exist but workplan does");
+
+        var currentWorkPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
+        if (currentWorkPlan == null)
+            throw new Exception("Concluding non existential work plan");
+
+        await workPlansRepo.ConcludeWorkPlanAsync(currentWorkPlan.Id);
+        
+        currentWorkPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
+        if (currentWorkPlan != null)
+            return;
+
+        await clubRepo.CloseClub(club.Id);
     }
 }

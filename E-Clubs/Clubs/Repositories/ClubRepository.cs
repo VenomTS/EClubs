@@ -34,4 +34,14 @@ public class ClubRepository(AppDbContext dbContext)
         .FirstOrDefaultAsync(club => club.Id == id);
     
     public async Task<bool> ClubExistsAsync(Guid clubId) => await dbContext.Clubs.AnyAsync(club => club.Id == clubId);
+
+    public async Task CloseClub(Guid clubId)
+    {
+        var club = await dbContext.Clubs.FindAsync(clubId);
+        if (club == null)
+            return;
+        
+        club.IsActive = false;
+        await dbContext.SaveChangesAsync();
+    }
 }

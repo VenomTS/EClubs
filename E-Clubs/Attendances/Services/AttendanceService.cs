@@ -5,12 +5,13 @@ using E_Clubs.Clubs.Repositories;
 using E_Clubs.Enums;
 using E_Clubs.OneOfTypes;
 using E_Clubs.Users.Repositories;
+using E_Clubs.WorkPlans.Repositories;
 using OneOf;
 using OneOf.Types;
 
 namespace E_Clubs.Attendances.Services;
 
-public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRepo, ClubRepository clubRepo, UserRepository userRepo)
+public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRepo, ClubRepository clubRepo, UserRepository userRepo, WorkPlansRepository workPlansRepo, ClubStudentRepository clubStudentRepo)
 {
     public async Task<OneOf<List<GetAllAttendancesResponse>, ClubNotFound>> GetAllAttendancesByClubIdAsync(Guid clubId)
     {
@@ -80,8 +81,32 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
         if(!clubExists)
             return new ClubNotFound();
-        
-        // NOT YET IMPLEMENTED SINCE THERE IS NO JOIN TABLE BETWEEN USERS AND CLUBS
+
+        var currentWorkPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
+        if (currentWorkPlan == null)
+            throw new Exception("Current Work Plan is Null but attendance is being taken");
+
+        var students = await clubStudentRepo.GetStudentsByClubIdAsync(clubId);
+
+        foreach (var student in students)
+        {
+            var wasPresent = await attendanceRepo.WasUserPresentByWorkPlanId(student.StudentId, currentWorkPlan.Id);
+            if (wasPresent)
+                continue;
+
+            var attendance = new Attendance
+            {
+                ClubId = clubId,
+                WorkPlanId = currentWorkPlan.Id,
+                StudentId = student.StudentId,
+                Status = AttendanceStatus.Absent,
+                Club = null!,
+                WorkPlan = null!,
+                Student = null!
+            };
+
+            await attendanceRepo.RegisterAttendance(attendance);
+        }
         
         return new Success();
     }
