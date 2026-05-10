@@ -1,3 +1,4 @@
+using E_Clubs.Auth.DTO;
 using E_Clubs.Auth.Services;
 using E_Clubs.Users.DTO;
 using E_Clubs.Users.Services;

@@ -9,7 +9,7 @@ namespace E_Clubs.Messages;
 public class MessagesController(MessageService messageService) : ControllerBase
 {
     [HttpGet("{messageId:guid}", Name = "GetMessageById")]
-    [ProducesResponseType<GetMessageByIdResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<GetMessageResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMessageById([FromRoute] Guid messageId)
     {

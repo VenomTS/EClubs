@@ -4,6 +4,7 @@ using E_Clubs.Attendances.Repositories;
 using E_Clubs.Clubs.Repositories;
 using E_Clubs.Enums;
 using E_Clubs.OneOfTypes;
+using E_Clubs.Users.DTO;
 using E_Clubs.Users.Repositories;
 using E_Clubs.WorkPlans.Repositories;
 using OneOf;
@@ -25,7 +26,7 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
         var attendancesPerUser = attendances.GroupBy(attendance => attendance.Student)
             .Select(user => new GetAllAttendancesResponse
             {
-                Student = new AttendanceUserResponse
+                Student = new GetUserResponse
                 {
                     FirstName = user.First().Student.FirstName,
                     LastName = user.First().Student.LastName,

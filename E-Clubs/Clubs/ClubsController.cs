@@ -1,8 +1,6 @@
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Clubs.QueryObjects;
 using E_Clubs.Clubs.Services;
-using E_Clubs.Enums;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Clubs;
@@ -12,7 +10,7 @@ namespace E_Clubs.Clubs;
 public class ClubsController(ClubService clubService) : ControllerBase
 {
     [HttpGet("{id:guid}", Name = "GetClubById")]
-    [ProducesResponseType<GetClubByIdResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<GetClubResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
@@ -32,7 +30,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
     }
     
     [HttpPost(Name = "CreateClub")]
-    [ProducesResponseType<CreateClubResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<GetClubResponse>(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateClubRequest request)
     {
         var createdClub = await clubService.CreateClubAsync(request);
@@ -40,7 +38,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
     }
 
     [HttpGet(Name = "GetClubsForUser")]
-    [ProducesResponseType<IEnumerable<GetAllClubsResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<GetClubResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllClubsQueryObject queryObject)
     {
         var clubs = await clubService.GetClubsByUserIdAsync(queryObject);

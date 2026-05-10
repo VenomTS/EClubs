@@ -1,4 +1,5 @@
 using AutoMapper;
+using E_Clubs.Auth.DTO;
 using E_Clubs.Auth.Services;
 using E_Clubs.Enums;
 using E_Clubs.OneOfTypes;

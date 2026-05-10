@@ -1,7 +1,0 @@
-namespace E_Clubs.Clubs.DTO;
-
-public class ClubProfessorResponse
-{
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-}

@@ -10,17 +10,17 @@ namespace E_Clubs.Messages.Services;
 
 public class MessageService(IMapper mapper, MessageRepository messageRepo, ClubRepository clubRepo)
 {
-    public async Task<OneOf<GetMessageByIdResponse, MessageNotFound>> GetMessageByIdAsync(Guid messageId)
+    public async Task<OneOf<GetMessageResponse, MessageNotFound>> GetMessageByIdAsync(Guid messageId)
     {
         var message = await messageRepo.GetMessageByIdAsync(messageId);
         if(message == null)
             return new MessageNotFound();
         
-        var messageDto = mapper.Map<GetMessageByIdResponse>(message);
+        var messageDto = mapper.Map<GetMessageResponse>(message);
         return messageDto;
     }
     
-    public async Task<OneOf<List<GetAllMessagesByClubIdResponse>, ClubNotFound>> GetAllMessagesByClubIdAsync(Guid clubId)
+    public async Task<OneOf<List<GetMessageResponse>, ClubNotFound>> GetAllMessagesByClubIdAsync(Guid clubId)
     {
         var club = await clubRepo.GetClubByIdAsync(clubId);
         if (club == null)
@@ -28,10 +28,10 @@ public class MessageService(IMapper mapper, MessageRepository messageRepo, ClubR
         
         var messages = await messageRepo.GetMessagesByClubIdAsync(clubId);
         
-        return mapper.Map<List<GetAllMessagesByClubIdResponse>>(messages);
+        return mapper.Map<List<GetMessageResponse>>(messages);
     }
     
-    public async Task<OneOf<CreateMessageResponse, ClubNotFound>> CreateMessageAsync(Guid clubId, CreateMessageRequest request)
+    public async Task<OneOf<GetMessageResponse, ClubNotFound>> CreateMessageAsync(Guid clubId, CreateMessageRequest request)
     {
         var club = await clubRepo.GetClubByIdAsync(clubId);
         if (club == null)
@@ -43,7 +43,7 @@ public class MessageService(IMapper mapper, MessageRepository messageRepo, ClubR
         messageModel = await messageRepo.CreateMessageAsync(messageModel);
         
         var createdMessage = await messageRepo.GetMessageByIdAsync(messageModel.Id);
-        return mapper.Map<CreateMessageResponse>(createdMessage);
+        return mapper.Map<GetMessageResponse>(createdMessage);
     }
 
     public async Task<OneOf<Success, MessageNotFound>> DeleteMessageByIdAsync(Guid messageId)

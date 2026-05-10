@@ -10,7 +10,7 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
 {
 
     [HttpGet(Name = "GetWorkPlansForClub")]
-    [ProducesResponseType<IEnumerable<GetAllWorkPlansByClubIdResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<GetWorkPlanResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromRoute] Guid clubId)
     {
@@ -30,7 +30,7 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
     }
 
     [HttpPost(Name = "CreateWorkPlanForClub")]
-    [ProducesResponseType<CreateWorkPlanResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<GetWorkPlanResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create([FromRoute] Guid clubId, [FromBody] CreateWorkPlanRequest request)
     {
@@ -50,7 +50,7 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
     }
 
     [HttpGet("current", Name = "GetCurrentWorkPlan")]
-    [ProducesResponseType<GetCurrentWorkPlanResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<GetWorkPlanResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetCurrentWorkPlan([FromRoute] Guid clubId)

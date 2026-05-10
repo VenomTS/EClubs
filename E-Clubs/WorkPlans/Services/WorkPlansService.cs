@@ -10,7 +10,7 @@ namespace E_Clubs.WorkPlans.Services;
 
 public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo, ClubRepository clubRepo)
 {
-    public async Task<OneOf<List<GetAllWorkPlansByClubIdResponse>, ClubNotFound>> GetAllWorkPlansByClubIdAsync(Guid clubId)
+    public async Task<OneOf<List<GetWorkPlanResponse>, ClubNotFound>> GetAllWorkPlansByClubIdAsync(Guid clubId)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
         if(!clubExists)
@@ -18,34 +18,31 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         
         var workPlans = await workPlansRepo.GetWorkPlansByClubIdAsync(clubId);
 
-        var workPlansDto = workPlans.Select(mapper.Map<GetAllWorkPlansByClubIdResponse>);
+        var workPlansDto = workPlans.Select(mapper.Map<GetWorkPlanResponse>);
         
         return workPlansDto.ToList();
     }
 
-    public async Task<OneOf<CreateWorkPlanResponse, ClubNotFound>> CreateWorkPlanAsync(
+    public async Task<OneOf<GetWorkPlanResponse, ClubNotFound>> CreateWorkPlanAsync(
         Guid clubId, CreateWorkPlanRequest request)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
         if(!clubExists)
             return new ClubNotFound();
-
-        var existingWorkPlanCount = await workPlansRepo.GetWorkPlanCountByClubIdAsync(clubId);
         
         var workPlanModel = mapper.Map<WorkPlan>(request);
         workPlanModel.ClubId = clubId;
         workPlanModel.Status = WorkPlanStatus.Scheduled;
         workPlanModel.RealizationDate = null;
-        workPlanModel.LessonNumber = existingWorkPlanCount + 1;
         
         var createdWorkPlan = await workPlansRepo.CreateWorkPlanAsync(workPlanModel);
 
-        var workPlanDto = mapper.Map<CreateWorkPlanResponse>(createdWorkPlan);
+        var workPlanDto = mapper.Map<GetWorkPlanResponse>(createdWorkPlan);
 
         return workPlanDto;
     }
 
-    public async Task<OneOf<GetCurrentWorkPlanResponse, ClubNotFound, WorkPlanNotFound>> GetCurrentWorkPlanByClubIdAsync(
+    public async Task<OneOf<GetWorkPlanResponse, ClubNotFound, WorkPlanNotFound>> GetCurrentWorkPlanByClubIdAsync(
         Guid clubId)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
@@ -55,7 +52,7 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
 
         var workPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
 
-        return workPlan == null ? new WorkPlanNotFound() : mapper.Map<GetCurrentWorkPlanResponse>(workPlan);
+        return workPlan == null ? new WorkPlanNotFound() : mapper.Map<GetWorkPlanResponse>(workPlan);
     }
 
     public async Task<OneOf<IEnumerable<GetDomainsResponse>, ClubNotFound>> GetDomainsByClubIdAsync(Guid clubId)
@@ -68,12 +65,8 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         var workPlans = await workPlansRepo.GetWorkPlansByClubIdAsync(clubId);
 
         workPlans = workPlans.DistinctBy(workPlan => workPlan.Domain).ToList();
-
-        var domains = workPlans.Select(x => new GetDomainsResponse
-        {
-            DomainNumber = x.DomainNumber,
-            Domain = x.Domain,
-        }).ToList();
+        
+        var domains = mapper.Map<List<GetDomainsResponse>>(workPlans);
 
         return domains;
     }

@@ -1,6 +1,6 @@
 namespace E_Clubs.Clubs.DTO;
 
-public class AddStudentToClubRequest
+public class StudentClubRequest
 {
     public Guid StudentId { get; set; }
 }

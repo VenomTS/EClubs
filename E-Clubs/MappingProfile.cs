@@ -1,6 +1,7 @@
 using AutoMapper;
 using E_Clubs.Attendances;
 using E_Clubs.Attendances.DTO;
+using E_Clubs.Auth.DTO;
 using E_Clubs.Clubs;
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Messages;
@@ -17,28 +18,18 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<User, RegisterUserRequest>().ReverseMap();
-        CreateMap<User, ClubProfessorResponse>().ReverseMap();
-        CreateMap<User, MessageSenderResponse>().ReverseMap();
-        CreateMap<User, AttendanceUserResponse>().ReverseMap();
+        CreateMap<User, GetUserResponse>().ReverseMap();
         
         CreateMap<Club, CreateClubRequest>().ReverseMap();
-        CreateMap<Club, CreateClubResponse>().ReverseMap();
-        CreateMap<Club, GetClubByIdResponse>().ReverseMap();
-        CreateMap<Club, GetAllClubsResponse>().ReverseMap();
+        CreateMap<Club, GetClubResponse>().ReverseMap();
         
         CreateMap<WorkPlan, CreateWorkPlanRequest>().ReverseMap();
-        CreateMap<WorkPlan, CreateWorkPlanResponse>().ReverseMap();
-        CreateMap<WorkPlan, GetCurrentWorkPlanResponse>().ReverseMap();
-        CreateMap<WorkPlan, GetAllWorkPlansByClubIdResponse>().ReverseMap();
-        CreateMap<WorkPlan, ClubWorkPlansResponse>().ReverseMap();
+        CreateMap<WorkPlan, GetWorkPlanResponse>().ReverseMap();
         CreateMap<WorkPlan, GetDomainsResponse>().ReverseMap();
         
         CreateMap<Message, CreateMessageRequest>().ReverseMap();
         CreateMap<Message, UpdateMessageRequest>().ReverseMap();
-        CreateMap<Message, CreateMessageResponse>().ReverseMap();
-        CreateMap<Message, GetAllMessagesByClubIdResponse>().ReverseMap();
-        CreateMap<Message, GetMessageByIdResponse>().ReverseMap();
-        CreateMap<Message, ClubMessageResponse>().ReverseMap();
+        CreateMap<Message, GetMessageResponse>().ReverseMap();
         
         CreateMap<Attendance, GetAllAttendancesResponse>().ReverseMap();
         CreateMap<Attendance, GetUserAttendanceResponse>().ReverseMap();

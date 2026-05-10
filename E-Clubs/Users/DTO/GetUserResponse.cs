@@ -1,6 +1,6 @@
-namespace E_Clubs.Messages.DTO;
+namespace E_Clubs.Users.DTO;
 
-public class MessageSenderResponse
+public class GetUserResponse
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

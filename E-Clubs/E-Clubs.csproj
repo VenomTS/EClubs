@@ -21,19 +21,4 @@
         <PackageReference Include="Scalar.AspNetCore" Version="2.13.8" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Attendances\QueryObjects\" />
-      <Folder Include="Auth\DTO\" />
-      <Folder Include="Auth\QueryObjects\" />
-      <Folder Include="Auth\Repositories\" />
-      <Folder Include="Messages\QueryObjects\" />
-      <Folder Include="Template\DTO\" />
-      <Folder Include="Template\QueryObjects\" />
-      <Folder Include="Template\Repositories\" />
-      <Folder Include="Template\Services\" />
-      <Folder Include="Users\QueryObjects\" />
-      <Folder Include="Utils\" />
-      <Folder Include="WorkPlans\QueryObjects\" />
-    </ItemGroup>
-
 </Project>

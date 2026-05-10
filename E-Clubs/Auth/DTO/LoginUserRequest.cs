@@ -1,4 +1,4 @@
-namespace E_Clubs.Users.DTO;
+namespace E_Clubs.Auth.DTO;
 
 public class LoginUserRequest
 {

@@ -12,7 +12,7 @@ namespace E_Clubs.Clubs.Services;
 
 public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, UserRepository userRepo, WorkPlansRepository workPlansRepo)
 {
-    public async Task<CreateClubResponse> CreateClubAsync(CreateClubRequest request)
+    public async Task<GetClubResponse> CreateClubAsync(CreateClubRequest request)
     {
         var clubModel = mapper.Map<Club>(request);
         
@@ -20,14 +20,14 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
         
         var createdClub = await clubRepo.CreateClubAsync(clubModel);
         
-        return mapper.Map<CreateClubResponse>(createdClub);
+        return mapper.Map<GetClubResponse>(createdClub);
     }
 
-    public async Task<IEnumerable<GetAllClubsResponse>> GetClubsByUserIdAsync(GetAllClubsQueryObject queryObject)
+    public async Task<IEnumerable<GetClubResponse>> GetClubsByUserIdAsync(GetAllClubsQueryObject queryObject)
     {
         var clubs = await clubRepo.GetClubsByUserIdAsync(queryObject.UserId);
 
-        var clubsDto = mapper.Map<List<GetAllClubsResponse>>(clubs);
+        var clubsDto = mapper.Map<List<GetClubResponse>>(clubs);
 
         return clubsDto;
     }
@@ -50,14 +50,14 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
         return students;
     }
 
-    public async Task<OneOf<GetClubByIdResponse, ClubNotFound>> GetClubByIdAsync(Guid id)
+    public async Task<OneOf<GetClubResponse, ClubNotFound>> GetClubByIdAsync(Guid id)
     {
         var club = await clubRepo.GetClubByIdAsync(id);
         
         if(club == null)
             return new ClubNotFound();
         
-        var clubDto = mapper.Map<GetClubByIdResponse>(club);
+        var clubDto = mapper.Map<GetClubResponse>(club);
 
         return clubDto;
     }
