@@ -108,6 +108,7 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
         foreach (var student in students)
         {
             var wasPresent = await attendanceRepo.WasUserPresentByWorkPlanId(student.StudentId, currentWorkPlan.Id);
+            Console.WriteLine($"{student.Student.FirstName} {student.Student.LastName} - Was Present: {wasPresent}");
             if (wasPresent)
                 continue;
 

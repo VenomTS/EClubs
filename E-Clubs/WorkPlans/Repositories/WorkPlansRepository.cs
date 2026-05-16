@@ -27,7 +27,7 @@ public class WorkPlansRepository(AppDbContext dbContext)
 
     public async Task<WorkPlan?> GetCurrentWorkPlanByClubIdAsync(Guid clubId)
     {
-        return await dbContext.WorkPlans.Where(x => x.ClubId == clubId && x.RealizationDate == null).FirstOrDefaultAsync();
+        return await dbContext.WorkPlans.Where(x => x.ClubId == clubId && x.Status == WorkPlanStatus.Scheduled).FirstOrDefaultAsync();
     }
     
     public async Task<bool> WorkPlanExistsAsync(Guid workPlanId) => await dbContext.WorkPlans.AnyAsync(workPlan => workPlan.Id == workPlanId);
