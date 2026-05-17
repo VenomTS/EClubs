@@ -1,6 +1,6 @@
 namespace E_Clubs.Auth.DTO;
 
-public class GetMeResponse
+public class  GetMeResponse
 {
     public Guid Id { get; set; }
     public string FirstName { get; set; } = string.Empty;
