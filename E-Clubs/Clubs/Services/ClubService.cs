@@ -23,7 +23,7 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
         return mapper.Map<GetClubResponse>(createdClub);
     }
 
-    public async Task<IEnumerable<GetClubResponse>> GetClubsByUserIdAsync(GetAllClubsQueryObject queryObject)
+    public async Task<IEnumerable<GetClubResponse>> GetClubsByUserIdAsync(GetClubsQueryObject queryObject)
     {
         var clubs = await clubRepo.GetClubsByUserIdAsync(queryObject.UserId);
 

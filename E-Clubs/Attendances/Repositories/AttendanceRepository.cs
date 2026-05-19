@@ -27,11 +27,5 @@ public class AttendanceRepository(AppDbContext dbContext)
         await dbContext.Attendances.AddAsync(attendance);
         await dbContext.SaveChangesAsync();
     }
-
-    public async Task<bool> WasUserPresentByWorkPlanId(Guid userId, Guid workPlanId)
-    {
-        return await dbContext.Attendances.AnyAsync(attendance =>
-            attendance.StudentId == userId && attendance.WorkPlanId == workPlanId);
-    }
     
 }

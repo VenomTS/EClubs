@@ -15,7 +15,8 @@ public class ClubsController(ClubService clubService) : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await clubService.GetClubByIdAsync(id);
-
+    
+        
         return result.Match<IActionResult>(
             Ok,
             _ => NotFound(new ProblemDetails
@@ -39,7 +40,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
 
     [HttpGet(Name = "GetClubsForUser")]
     [ProducesResponseType<IEnumerable<GetClubResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll([FromQuery] GetAllClubsQueryObject queryObject)
+    public async Task<IActionResult> GetAll([FromQuery] GetClubsQueryObject queryObject)
     {
         var clubs = await clubService.GetClubsByUserIdAsync(queryObject);
 
