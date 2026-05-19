@@ -1,6 +1,7 @@
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Clubs.QueryObjects;
 using E_Clubs.Clubs.Services;
+using E_Clubs.Users.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Clubs;
@@ -15,8 +16,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await clubService.GetClubByIdAsync(id);
-    
-        
+
         return result.Match<IActionResult>(
             Ok,
             _ => NotFound(new ProblemDetails
@@ -48,7 +48,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
     }
 
     [HttpGet("{clubId:guid}/students", Name = "GetStudentsInClub")]
-    [ProducesResponseType<IEnumerable<GetStudentByClubIdResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<GetUserResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetStudents([FromRoute] Guid clubId)
     {

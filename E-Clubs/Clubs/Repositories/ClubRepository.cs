@@ -5,14 +5,12 @@ namespace E_Clubs.Clubs.Repositories;
 
 public class ClubRepository(AppDbContext dbContext)
 {
-
     public async Task<Club> CreateClubAsync(Club club)
     {
         await dbContext.Clubs.AddAsync(club);
         await dbContext.SaveChangesAsync();
-        
-        var createdClub = await GetClubByIdAsync(club.Id);
-        return createdClub ?? throw new Exception("Club was not created");
+
+        return club;
     }
 
     public async Task<IEnumerable<Club>> GetClubsByUserIdAsync(Guid? userId)
@@ -27,21 +25,12 @@ public class ClubRepository(AppDbContext dbContext)
         return await clubs.ToListAsync();
     }
 
-    public async Task<Club?> GetClubByIdAsync(Guid id) => await dbContext.Clubs
-        .Include(club => club.Professor)
-        .Include(club => club.WorkPlans)
-        .Include(club => club.Messages).ThenInclude(message => message.Sender)
-        .FirstOrDefaultAsync(club => club.Id == id);
+    public async Task<Club?> GetClubByIdAsync(Guid id) => 
+        await dbContext.Clubs.Include(club => club.Professor)
+            .FirstOrDefaultAsync(club => club.Id == id);
     
-    public async Task<bool> ClubExistsAsync(Guid clubId) => await dbContext.Clubs.AnyAsync(club => club.Id == clubId);
-
-    public async Task CloseClub(Guid clubId)
-    {
-        var club = await dbContext.Clubs.FindAsync(clubId);
-        if (club == null)
-            return;
-        
-        club.IsActive = false;
-        await dbContext.SaveChangesAsync();
-    }
+    public async Task<bool> ClubExistsAsync(Guid clubId) => 
+        await dbContext.Clubs.AnyAsync(club => club.Id == clubId);
+    
+    public async Task<bool> CodeExists(string code) => await dbContext.Clubs.AnyAsync(x => x.Code == code && x.IsActive);
 }

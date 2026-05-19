@@ -1,22 +1,27 @@
+using System.Text;
 using AutoMapper;
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Clubs.QueryObjects;
 using E_Clubs.Clubs.Repositories;
 using E_Clubs.OneOfTypes;
+using E_Clubs.Users.DTO;
 using E_Clubs.Users.Repositories;
-using E_Clubs.WorkPlans.Repositories;
 using OneOf;
 using OneOf.Types;
 
 namespace E_Clubs.Clubs.Services;
 
-public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, UserRepository userRepo, WorkPlansRepository workPlansRepo)
+public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, UserRepository userRepo)
 {
+    private const string CodeCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private const int CodeLength = 6;
+    
     public async Task<GetClubResponse> CreateClubAsync(CreateClubRequest request)
     {
         var clubModel = mapper.Map<Club>(request);
         
         clubModel.IsActive = true;
+        clubModel.Code = await GenerateClubCode();
         
         var createdClub = await clubRepo.CreateClubAsync(clubModel);
         
@@ -32,7 +37,7 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
         return clubsDto;
     }
 
-    public async Task<OneOf<IEnumerable<GetStudentByClubIdResponse>, ClubNotFound>> GetStudentsByClubIdAsync(Guid clubId)
+    public async Task<OneOf<IEnumerable<GetUserResponse>, ClubNotFound>> GetStudentsByClubIdAsync(Guid clubId)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
         if (!clubExists)
@@ -40,7 +45,7 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
 
         var clubStudents = await clubStudentRepo.GetStudentsByClubIdAsync(clubId);
 
-        var students = clubStudents.Select(x => new GetStudentByClubIdResponse
+        var students = clubStudents.Select(x => new GetUserResponse
         {
             Id = x.StudentId,
             FirstName = x.Student.FirstName,
@@ -117,22 +122,17 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
         return new Success();
     }
 
-    public async Task ConcludeWorkPlan(Guid clubId)
+    private async Task<string> GenerateClubCode()
     {
-        var club = await clubRepo.GetClubByIdAsync(clubId);
-        if (club == null)
-            throw new Exception("Club does not exist but workplan does");
+        var code = new StringBuilder();
+        do
+        {
+            code.Clear();
+            var random = new Random();
+            while(code.Length < CodeLength)
+                code.Append(CodeCharacters[random.Next(CodeCharacters.Length)]);
+        } while (await clubRepo.CodeExists(code.ToString()));
 
-        var currentWorkPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
-        if (currentWorkPlan == null)
-            throw new Exception("Concluding non existential work plan");
-
-        await workPlansRepo.ConcludeWorkPlanAsync(currentWorkPlan.Id);
-        
-        currentWorkPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
-        if (currentWorkPlan != null)
-            return;
-
-        await clubRepo.CloseClub(club.Id);
+        return code.ToString();
     }
 }

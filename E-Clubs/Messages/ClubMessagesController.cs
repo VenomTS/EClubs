@@ -9,7 +9,7 @@ namespace E_Clubs.Messages;
 public class ClubMessagesController(MessageService messageService) : ControllerBase
 {
     
-    [HttpGet(Name = "GetMessagesForClub")]
+    [HttpGet(Name = "GetMessagesByClubId")]
     [ProducesResponseType<IEnumerable<GetMessageResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAll([FromRoute] Guid clubId)
@@ -29,7 +29,7 @@ public class ClubMessagesController(MessageService messageService) : ControllerB
         );
     }
     
-    [HttpPost(Name = "CreateMessageForClub")]
+    [HttpPost(Name = "SendMessage")]
     [ProducesResponseType<GetMessageResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create([FromRoute] Guid clubId, [FromBody] CreateMessageRequest request)
