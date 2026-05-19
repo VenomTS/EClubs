@@ -47,7 +47,7 @@ public class UserService(IMapper mapper, JWTService jwtService, UserRepository u
         return result;
     }
     
-    public async Task<OneOf<Success, UserAlreadyExists>> RegisterUserAsync(RegisterUserRequest request)
+    public async Task<OneOf<string, UserAlreadyExists>> RegisterUserAsync(RegisterUserRequest request)
     {
         if (await userRepo.UserExistsAsync(request.Mail))
             return new UserAlreadyExists();
@@ -61,7 +61,10 @@ public class UserService(IMapper mapper, JWTService jwtService, UserRepository u
         userModel.PasswordSalt = passwordSalt;
         userModel.Roles = Roles.Student;
         await userRepo.CreateUserAsync(userModel);
-        return new Success();
+        
+        var token = jwtService.GenerateToken(userModel);
+
+        return token;
     }
 
     // UserNotFound is used for both invalid mail AND password (for security reasons)

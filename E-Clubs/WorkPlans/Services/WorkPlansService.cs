@@ -1,6 +1,5 @@
 using AutoMapper;
 using E_Clubs.Clubs.Repositories;
-using E_Clubs.Enums;
 using E_Clubs.OneOfTypes;
 using E_Clubs.WorkPlans.DTO;
 using E_Clubs.WorkPlans.Repositories;
@@ -32,7 +31,6 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         
         var workPlanModel = mapper.Map<WorkPlan>(request);
         workPlanModel.ClubId = clubId;
-        workPlanModel.Status = WorkPlanStatus.Scheduled;
         workPlanModel.RealizationDate = null;
         
         var createdWorkPlan = await workPlansRepo.CreateWorkPlanAsync(workPlanModel);
