@@ -11,24 +11,11 @@ namespace E_Clubs.Auth.Services;
 
 public class JWTService(IConfiguration config)
 {
-    public static DateTime GetExpirationDate()
-    {
-        return DateTime.Now.AddHours(1);
-    }
+    public static DateTime GetExpirationDate() => DateTime.Now.AddHours(1);
     
     private static List<Claim> GenerateClaims(User user)
     {
-        var claims = new List<Claim>
-        {
-            new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new (JwtRegisteredClaimNames.GivenName, user.FirstName),
-            new (JwtRegisteredClaimNames.FamilyName, user.LastName),
-        };
-
-        var userRoles = Enum.GetValues<Roles>()
-            .Where(role => user.Roles.HasFlag(role));
-        
-        claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
+        List<Claim> claims = [new(JwtRegisteredClaimNames.Sub, user.Id.ToString())];
         return claims;
     }
 

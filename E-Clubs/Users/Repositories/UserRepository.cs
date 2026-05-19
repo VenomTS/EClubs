@@ -11,17 +11,15 @@ public class UserRepository(AppDbContext dbContext)
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<User?> GetUserByMailAsync(string mail)
-    {
-        var user = await dbContext.Users.FirstOrDefaultAsync(user => user.Mail == mail);
-        return user;
-    }
+    public async Task<User?> GetUserByMailAsync(string mail) =>
+        await dbContext.Users.FirstOrDefaultAsync(user => user.Mail == mail);
+    
+    public async Task<User?> GetUserByIdAsync(Guid userId) => 
+        await dbContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
 
     public async Task<bool> UserExistsAsync(string mail) => 
         await dbContext.Users.AnyAsync(user => user.Mail == mail);
     
-    public async Task<bool> UserExistsAsync(Guid userId) => await dbContext.Users.AnyAsync(user => user.Id == userId);
-
-    public async Task<User?> GetUserByIdAsync(Guid userId) => 
-        await dbContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
+    public async Task<bool> UserExistsAsync(Guid userId) => 
+        await dbContext.Users.AnyAsync(user => user.Id == userId);
 }

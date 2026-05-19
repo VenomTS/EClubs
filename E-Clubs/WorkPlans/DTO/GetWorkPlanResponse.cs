@@ -1,5 +1,3 @@
-using E_Clubs.Enums;
-
 namespace E_Clubs.WorkPlans.DTO;
 
 public class GetWorkPlanResponse
@@ -11,7 +9,5 @@ public class GetWorkPlanResponse
     public string LearningOutcome { get; set; } = string.Empty;
     public string Indicator { get; set; } = string.Empty;
     
-    public WorkPlanStatus Status { get; set; }
-    public DateOnly ScheduledDate { get; set; }
     public DateOnly? RealizationDate { get; set; }
 }
