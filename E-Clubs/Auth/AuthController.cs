@@ -1,6 +1,5 @@
 using E_Clubs.Auth.DTO;
 using E_Clubs.Auth.Services;
-using E_Clubs.Users.DTO;
 using E_Clubs.Users.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,27 +32,31 @@ public class AuthController(UserService userService) : ControllerBase
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
                 Title = "Not Found",
                 Status = StatusCodes.Status404NotFound,
-                Detail = $"There is no user related to the token provided",
+                Detail = "There is no user related to the token provided",
                 Instance = HttpContext.Request.Path,
             })
         );
     }
     
     [HttpPost("register", Name = "RegisterUser")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<ActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
     {
         var result = await userService.RegisterUserAsync(registerUserRequest);
 
-        return result.Match<ActionResult>(_ => Created(), _ => Conflict(new ProblemDetails
-        {
-            Type = "User-Already-Exists",
-            Title = "Conflict",
-            Status = StatusCodes.Status409Conflict,
-            Detail = "A user with this email already exists",
-            Instance = HttpContext.Request.Path
-        }));
+        if (result.IsT1)
+            return Conflict(new ProblemDetails
+            {
+                Type = "User-Already-Exists",
+                Title = "Conflict",
+                Status = StatusCodes.Status409Conflict,
+                Detail = "A user with this email already exists",
+                Instance = HttpContext.Request.Path
+            });
+        
+        Response.Cookies.Append(CookieName, result.AsT0, GetCookieOptions());
+        return NoContent();
     }
 
     [HttpPost("login", Name = "LoginUser")]
@@ -65,13 +68,18 @@ public class AuthController(UserService userService) : ControllerBase
 
         if (!result.IsT0) return Unauthorized();
         
-        Response.Cookies.Append(CookieName, result.AsT0, new CookieOptions
+        Response.Cookies.Append(CookieName, result.AsT0, GetCookieOptions());
+        return NoContent();
+    }
+
+    private static CookieOptions GetCookieOptions()
+    {
+        return new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
             Expires = JWTService.GetExpirationDate(),
-        });
-        return NoContent();
+        };
     }
 }

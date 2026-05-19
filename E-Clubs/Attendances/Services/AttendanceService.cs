@@ -87,45 +87,44 @@ public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRe
         var attendanceModel = mapper.Map<Attendance>(request);
 
         attendanceModel.ClubId = clubId;
-        attendanceModel.Status = AttendanceStatus.Present;
 
         await attendanceRepo.RegisterAttendance(attendanceModel);
         return new Success();
     }
 
-    public async Task<OneOf<Success, ClubNotFound>> MarkAbsentStudentsAsync(Guid clubId)
-    {
-        var clubExists = await clubRepo.ClubExistsAsync(clubId);
-        if(!clubExists)
-            return new ClubNotFound();
-
-        var currentWorkPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
-        if (currentWorkPlan == null)
-            throw new Exception("Current Work Plan is Null but attendance is being taken");
-
-        var students = await clubStudentRepo.GetStudentsByClubIdAsync(clubId);
-
-        foreach (var student in students)
-        {
-            var wasPresent = await attendanceRepo.WasUserPresentByWorkPlanId(student.StudentId, currentWorkPlan.Id);
-            Console.WriteLine($"{student.Student.FirstName} {student.Student.LastName} - Was Present: {wasPresent}");
-            if (wasPresent)
-                continue;
-
-            var attendance = new Attendance
-            {
-                ClubId = clubId,
-                WorkPlanId = currentWorkPlan.Id,
-                StudentId = student.StudentId,
-                Status = AttendanceStatus.Absent,
-                Club = null!,
-                WorkPlan = null!,
-                Student = null!
-            };
-
-            await attendanceRepo.RegisterAttendance(attendance);
-        }
-        
-        return new Success();
-    }
+    // public async Task<OneOf<Success, ClubNotFound>> MarkAbsentStudentsAsync(Guid clubId)
+    // {
+    //     var clubExists = await clubRepo.ClubExistsAsync(clubId);
+    //     if(!clubExists)
+    //         return new ClubNotFound();
+    //
+    //     var currentWorkPlan = await workPlansRepo.GetCurrentWorkPlanByClubIdAsync(clubId);
+    //     if (currentWorkPlan == null)
+    //         throw new Exception("Current Work Plan is Null but attendance is being taken");
+    //
+    //     var students = await clubStudentRepo.GetStudentsByClubIdAsync(clubId);
+    //
+    //     foreach (var student in students)
+    //     {
+    //         var wasPresent = await attendanceRepo.WasUserPresentByWorkPlanId(student.StudentId, currentWorkPlan.Id);
+    //         Console.WriteLine($"{student.Student.FirstName} {student.Student.LastName} - Was Present: {wasPresent}");
+    //         if (wasPresent)
+    //             continue;
+    //
+    //         var attendance = new Attendance
+    //         {
+    //             ClubId = clubId,
+    //             WorkPlanId = currentWorkPlan.Id,
+    //             StudentId = student.StudentId,
+    //             Status = AttendanceStatus.Absent,
+    //             Club = null!,
+    //             WorkPlan = null!,
+    //             Student = null!
+    //         };
+    //
+    //         await attendanceRepo.RegisterAttendance(attendance);
+    //     }
+    //     
+    //     return new Success();
+    // }
 }

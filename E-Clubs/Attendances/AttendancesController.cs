@@ -1,17 +1,18 @@
 using E_Clubs.Attendances.DTO;
 using E_Clubs.Attendances.Services;
-using E_Clubs.Clubs.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Attendances;
 
 [ApiController]
 [Route("api/clubs/{clubId:guid}/[controller]")]
-public class AttendancesController(AttendanceService attendanceService, ClubService clubService) : ControllerBase
+public class AttendancesController(AttendanceService attendanceService) : ControllerBase
 {
     // This one should only be accessible by the professor
     [HttpGet(Name = "GetAttendancesForClub")]
-    public async Task<ActionResult<List<GetAttendanceResponse>>> GetAll([FromRoute] Guid clubId)
+    [ProducesResponseType<IEnumerable<GetAttendanceResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GetAll([FromRoute] Guid clubId)
     {
         var result = await attendanceService.GetAllAttendancesByClubIdAsync(clubId);
 
@@ -62,7 +63,7 @@ public class AttendancesController(AttendanceService attendanceService, ClubServ
     }
 
     // Call this when finished taking attendance
-    [HttpPost("conclude", Name = "ConcludeAttendanceTaking")]
+    /*[HttpPost("conclude", Name = "ConcludeAttendanceTaking")]
     public async Task<IActionResult> ConcludeRegistration([FromRoute] Guid clubId)
     {
         var result = await attendanceService.MarkAbsentStudentsAsync(clubId);
@@ -72,5 +73,5 @@ public class AttendancesController(AttendanceService attendanceService, ClubServ
 
         await clubService.ConcludeWorkPlan(clubId);
         return NoContent();
-    }
+    }*/
 }
