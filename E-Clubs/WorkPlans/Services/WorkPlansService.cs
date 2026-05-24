@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using AutoMapper;
 using E_Clubs.Clubs.Repositories;
 using E_Clubs.OneOfTypes;
 using E_Clubs.WorkPlans.DTO;
 using E_Clubs.WorkPlans.Repositories;
 using OneOf;
+using OneOf.Types;
 
 namespace E_Clubs.WorkPlans.Services;
 
@@ -67,5 +69,44 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         var domains = mapper.Map<List<GetDomainsResponse>>(workPlans);
 
         return domains;
+    }
+
+    public async Task<OneOf<Success, ClubNotFound, InvalidFile>> UploadWorkPlans(Guid clubId, IFormFile file)
+    {
+        var clubExists = await clubRepo.ClubExistsAsync(clubId);
+        
+        if(!clubExists)
+            return new ClubNotFound();
+        
+        if(file.Length == 0)
+            return new InvalidFile();
+
+        var tempFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}");
+
+        await using var stream = new FileStream(tempFilePath, FileMode.Create);
+        await file.CopyToAsync(stream);
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = @"C:\Users\Tarik\PycharmProjects\ExcelParser\.venv\Scripts\python.exe",
+            Arguments = $@"C:\Users\Tarik\RiderProjects\EClubs\E-Clubs\External\excelParser.py -i ""{tempFilePath}"" -cId {clubId}"
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = Process.Start(psi);
+        if (process == null)
+            return new InvalidFile();
+        
+        await process.WaitForExitAsync();
+
+        File.Delete(tempFilePath);
+
+        if (process.ExitCode != 0)
+            return new InvalidFile();
+
+        return new Success();
     }
 }

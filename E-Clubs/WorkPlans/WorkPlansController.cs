@@ -49,6 +49,16 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
         );
     }
 
+    [HttpPost("batch", Name = "BatchCreateWorkPlanForClub")]
+    public async Task<ActionResult> BatchCreate([FromRoute] Guid clubId,
+        [FromBody] IEnumerable<CreateWorkPlanRequest> request)
+    {
+        foreach(var requestItem in request)
+            await Create(clubId, requestItem);
+        
+        return NoContent();
+    }
+
     [HttpGet("current", Name = "GetCurrentWorkPlan")]
     [ProducesResponseType<GetWorkPlanResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
@@ -89,6 +99,24 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
                 Instance = HttpContext.Request.Path,
             })
         );
+    }
+
+    [HttpPost("upload", Name = "UploadWorkPlansForClub")]
+    public async Task<ActionResult> Upload([FromRoute] Guid clubId, IFormFile file)
+    {
+        var result = await workPlansService.UploadWorkPlans(clubId, file);
+
+        return result.Match<ActionResult>(
+            _ => NoContent(),
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The club with ID {clubId} was not found",
+                Instance = HttpContext.Request.Path,
+            }),
+            _ => BadRequest());
     }
     
 }
