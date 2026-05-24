@@ -78,6 +78,7 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         if(!clubExists)
             return new ClubNotFound();
         
+        
         if(file.Length == 0)
             return new InvalidFile();
 
