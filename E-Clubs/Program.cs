@@ -76,7 +76,7 @@ builder.Services.AddScoped<AttendanceRepository>();
 // CORS
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy =>
 {
-    policy.WithOrigins("http://localhost:3000", "http://109.237.44.64:3000", "http://192.168.1.101:3000")
+    policy.SetIsOriginAllowed(_ => true)
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
