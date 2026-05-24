@@ -1,6 +1,6 @@
 ﻿namespace E_Clubs.OneOfTypes;
 
-public struct InvalideFile
+public struct InvalidFile
 {
     
 }
