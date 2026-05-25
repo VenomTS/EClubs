@@ -4,7 +4,6 @@ using E_Clubs.Attendances;
 using E_Clubs.Attendances.Repositories;
 using E_Clubs.Clubs.Repositories;
 using E_Clubs.Enums;
-using E_Clubs.Messages.DTO;
 using E_Clubs.OneOfTypes;
 using E_Clubs.WorkPlans.DTO;
 using E_Clubs.WorkPlans.Repositories;
