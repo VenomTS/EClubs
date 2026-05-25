@@ -28,8 +28,6 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         return workPlansDto.ToList();
     }
 
-
-
     public async Task<OneOf<GetWorkPlanResponse, ClubNotFound>> CreateWorkPlanAsync(
         Guid clubId, CreateWorkPlanRequest request)
     {
