@@ -1,3 +1,4 @@
+using E_Clubs.Messages.DTO;
 using E_Clubs.WorkPlans.DTO;
 using E_Clubs.WorkPlans.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -117,6 +118,31 @@ public class WorkPlansController(WorkPlansService workPlansService) : Controller
                 Instance = HttpContext.Request.Path,
             }),
             _ => BadRequest());
+    }
+
+    [HttpPost("conclude", Name = "ConcludeWorkPlanForClub")]
+    public async Task<ActionResult> Conclude([FromRoute] Guid clubId, [FromBody] ConcludeWorkPlanRequest request)
+    {
+        var result = await workPlansService.ConcludeWorkPlan(clubId, request);
+
+        return result.Match<ActionResult>(
+            _ => NoContent(),
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The club with ID {clubId} was not found",
+                Instance = HttpContext.Request.Path,
+            }),
+            _ => NotFound(new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = $"The Work Plan with ID {request.WorkPlanId} was not found",
+                Instance = HttpContext.Request.Path,
+            }));
     }
     
 }

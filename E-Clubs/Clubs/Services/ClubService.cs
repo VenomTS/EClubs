@@ -67,26 +67,26 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
         return clubDto;
     }
 
-    public async Task<OneOf<Success, ClubNotFound, StudentNotFound, StudentAlreadyInClub>> AddStudentToClubAsync(Guid clubId,
-        Guid studentId)
+    public async Task<OneOf<Success, ClubNotFound, StudentNotFound, StudentAlreadyInClub>> AddStudentToClubAsync(JoinClubRequest request)
     {
-        var clubExists = await clubRepo.ClubExistsAsync(clubId);
-        if (!clubExists)
+        var club = await clubRepo.GetClubByCodeAsync(request.Code);
+
+        if (club == null)
             return new ClubNotFound();
 
         // Dodatni check da se provjeri je li actually student
-        var studentExists = await userRepo.UserExistsAsync(studentId);
+        var studentExists = await userRepo.UserExistsAsync(request.StudentId);
         if (!studentExists)
             return new StudentNotFound();
         
-        var isStudentInClub = await clubStudentRepo.IsStudentInClub(clubId, studentId);
+        var isStudentInClub = await clubStudentRepo.IsStudentInClub(club.Id, request.StudentId);
         if (isStudentInClub)
             return new StudentAlreadyInClub();
 
         var clubStudent = new ClubStudent
         {
-            ClubId = clubId,
-            StudentId = studentId,
+            ClubId = club.Id,
+            StudentId = request.StudentId,
             Club = null!,
             Student = null!,
         };
@@ -96,24 +96,24 @@ public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRep
     }
 
     public async Task<OneOf<Success, ClubNotFound, StudentNotFound, ClubStudentNotFound>> DeleteStudentFromClub(
-        Guid clubId, Guid studentId)
+        Guid clubId, KickStudentRequest request)
     {
         var clubExists = await clubRepo.ClubExistsAsync(clubId);
         if (!clubExists)
             return new ClubNotFound();
 
-        var studentExists = await userRepo.UserExistsAsync(studentId);
+        var studentExists = await userRepo.UserExistsAsync(request.StudentId);
         if (!studentExists)
             return new StudentNotFound();
 
-        var isStudentInClub = await clubStudentRepo.IsStudentInClub(clubId, studentId);
+        var isStudentInClub = await clubStudentRepo.IsStudentInClub(clubId, request.StudentId);
         if (!isStudentInClub)
             return new ClubStudentNotFound();
 
         var clubStudent = new ClubStudent
         {
             ClubId = clubId,
-            StudentId = studentId,
+            StudentId = request.StudentId,
             Club = null!,
             Student = null!,
         };

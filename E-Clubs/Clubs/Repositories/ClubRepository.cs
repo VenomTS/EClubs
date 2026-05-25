@@ -25,6 +25,9 @@ public class ClubRepository(AppDbContext dbContext)
         return await clubs.ToListAsync();
     }
 
+    public async Task<Club?> GetClubByCodeAsync(string code) =>
+        await dbContext.Clubs.FirstOrDefaultAsync(club => club.Code == code);
+
     public async Task<Club?> GetClubByIdAsync(Guid id) => 
         await dbContext.Clubs.Include(club => club.Professor)
             .FirstOrDefaultAsync(club => club.Id == id);

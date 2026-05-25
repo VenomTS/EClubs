@@ -28,4 +28,7 @@ public class AttendanceRepository(AppDbContext dbContext)
         await dbContext.SaveChangesAsync();
     }
     
+    public async Task<List<Attendance>> GetAttendancesByClubIdByDate(Guid clubId, DateOnly date) =>
+        await dbContext.Attendances.Where(x => x.ClubId == clubId && x.Date == date).ToListAsync();
+    
 }

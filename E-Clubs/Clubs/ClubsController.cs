@@ -67,13 +67,13 @@ public class ClubsController(ClubService clubService) : ControllerBase
         );
     }
 
-    [HttpPost("{clubId:guid}/students/{studentId:guid}", Name = "AddStudentToClub")]
+    [HttpPost("join", Name = "AddStudentToClub")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> AddStudent([FromRoute] Guid clubId, [FromRoute] Guid studentId)
+    public async Task<IActionResult> AddStudent([FromBody] JoinClubRequest request)
     {
-        var result = await clubService.AddStudentToClubAsync(clubId, studentId);
+        var result = await clubService.AddStudentToClubAsync(request);
 
         return result.Match<IActionResult>(
             _ => NoContent(),
@@ -82,7 +82,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
                 Title = "Not Found",
                 Status = StatusCodes.Status404NotFound,
-                Detail = $"The club with ID {clubId} was not found",
+                Detail = $"The club with Code {request.Code} was not found",
                 Instance = HttpContext.Request.Path,
             }),
             _ => NotFound(new ProblemDetails
@@ -90,7 +90,7 @@ public class ClubsController(ClubService clubService) : ControllerBase
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
                 Title = "Not Found",
                 Status = StatusCodes.Status404NotFound,
-                Detail = $"The student with ID {studentId} was not found",
+                Detail = $"The student with ID {request.StudentId} was not found",
                 Instance = HttpContext.Request.Path,
             }),
             _ => Conflict(new ProblemDetails
@@ -98,18 +98,18 @@ public class ClubsController(ClubService clubService) : ControllerBase
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.8",
                 Title = "Conflict",
                 Status = StatusCodes.Status409Conflict,
-                Detail = $"The student with ID {studentId} is already in the club with ID {clubId}",
+                Detail = $"The student with ID {request.StudentId} is already in the club",
                 Instance = HttpContext.Request.Path,
             })
         );
     }
 
-    [HttpDelete("{clubId:guid}/students/{studentId:guid}", Name = "DeleteStudentFromClub")]
+    [HttpDelete("{clubId:guid}/students", Name = "DeleteStudentFromClub")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteStudent([FromRoute] Guid clubId, [FromRoute] Guid studentId)
+    public async Task<IActionResult> DeleteStudent([FromRoute] Guid clubId, [FromBody] KickStudentRequest request)
     {
-        var result = await clubService.DeleteStudentFromClub(clubId, studentId);
+        var result = await clubService.DeleteStudentFromClub(clubId, request);
         
         return result.Match<IActionResult>(
             _ => NoContent(),
@@ -126,16 +126,10 @@ public class ClubsController(ClubService clubService) : ControllerBase
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
                 Title = "Not Found",
                 Status = StatusCodes.Status404NotFound,
-                Detail = $"The student with ID {studentId} was not found",
+                Detail = $"The student with ID {request.StudentId} was not found",
                 Instance = HttpContext.Request.Path,
             }),
             _ => NoContent()
         );
-    }
-    
-    [HttpPost("import", Name = "ImportClubs")]
-    public async Task<IActionResult> Import(IFormFile file)
-    {
-        return BadRequest("Feature not implemented");
     }
 }

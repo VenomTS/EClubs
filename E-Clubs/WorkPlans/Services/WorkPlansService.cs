@@ -1,6 +1,10 @@
 using System.Diagnostics;
 using AutoMapper;
+using E_Clubs.Attendances;
+using E_Clubs.Attendances.Repositories;
 using E_Clubs.Clubs.Repositories;
+using E_Clubs.Enums;
+using E_Clubs.Messages.DTO;
 using E_Clubs.OneOfTypes;
 using E_Clubs.WorkPlans.DTO;
 using E_Clubs.WorkPlans.Repositories;
@@ -9,7 +13,7 @@ using OneOf.Types;
 
 namespace E_Clubs.WorkPlans.Services;
 
-public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo, ClubRepository clubRepo)
+public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, AttendanceRepository attendanceRepo)
 {
     public async Task<OneOf<List<GetWorkPlanResponse>, ClubNotFound>> GetAllWorkPlansByClubIdAsync(Guid clubId)
     {
@@ -23,6 +27,8 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         
         return workPlansDto.ToList();
     }
+
+
 
     public async Task<OneOf<GetWorkPlanResponse, ClubNotFound>> CreateWorkPlanAsync(
         Guid clubId, CreateWorkPlanRequest request)
@@ -109,6 +115,41 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         if (process.ExitCode != 0)
             return new InvalidFile();
 
+        return new Success();
+    }    public async Task<OneOf<Success, ClubNotFound, WorkPlanNotFound>> ConcludeWorkPlan(Guid clubId, ConcludeWorkPlanRequest request)
+    {
+        var club = await clubRepo.ClubExistsAsync(clubId);
+        if (!club)
+            return new ClubNotFound();
+
+        var workPlan = await workPlansRepo.GetWorkPlanByIdAsync(request.WorkPlanId);
+        if (workPlan == null)
+            return new WorkPlanNotFound();
+
+        var students = await clubStudentRepo.GetStudentsByClubIdAsync(clubId);
+
+        var attendances = await attendanceRepo.GetAttendancesByClubIdByDate(clubId, request.Date);
+        
+        // Uzmemo sve studente koji su dio sekcije i sve one koji su bili prisutni
+        // Prodjemo kroz loop ako je student bio prisutan preskocimo ga ako nije oznacimo da je bio odsutan
+
+        foreach (var student in students)
+        {
+            if (attendances.Any(x => x.StudentId == student.StudentId))
+                continue;
+
+            await attendanceRepo.RegisterAttendance(new Attendance
+            {
+                ClubId = clubId,
+                StudentId = student.StudentId,
+                Date = request.Date,
+                Status = AttendanceStatus.Absent,
+                Club = null!,
+                Student = null!,
+            });
+        }
+        
+        await workPlansRepo.RealizeWorkPlanAsync(request.WorkPlanId, request.Date);
         return new Success();
     }
 }
