@@ -74,7 +74,7 @@ builder.Services.AddScoped<ClubRepository>();
 builder.Services.AddScoped<ClubStudentRepository>();
 builder.Services.AddScoped<WorkPlansRepository>();
 builder.Services.AddScoped<MessageRepository>();
-builder.Services.AddScoped<AttendanceRepository>();
+builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<ReportRepository>();
 
 // CORS

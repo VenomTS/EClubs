@@ -12,7 +12,7 @@ using OneOf.Types;
 
 namespace E_Clubs.Attendances.Services;
 
-public class AttendanceService(IMapper mapper, AttendanceRepository attendanceRepo, ClubRepository clubRepo, UserRepository userRepo)
+public class AttendanceService(IMapper mapper, IAttendanceRepository attendanceRepo, ClubRepository clubRepo, UserRepository userRepo)
 {
     public async Task<OneOf<List<GetAttendanceResponse>, ClubNotFound>> GetAllAttendancesByClubIdAsync(Guid clubId)
     {
