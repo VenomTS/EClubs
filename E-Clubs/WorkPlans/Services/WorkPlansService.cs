@@ -5,6 +5,7 @@ using E_Clubs.Attendances.Repositories;
 using E_Clubs.Clubs.Repositories;
 using E_Clubs.Enums;
 using E_Clubs.OneOfTypes;
+using E_Clubs.Reports.Services;
 using E_Clubs.WorkPlans.DTO;
 using E_Clubs.WorkPlans.Repositories;
 using OneOf;
@@ -12,7 +13,7 @@ using OneOf.Types;
 
 namespace E_Clubs.WorkPlans.Services;
 
-public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, AttendanceRepository attendanceRepo)
+public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, AttendanceRepository attendanceRepo, ReportService reportService)
 {
     public async Task<OneOf<List<GetWorkPlanResponse>, ClubNotFound>> GetAllWorkPlansByClubIdAsync(Guid clubId)
     {
@@ -92,8 +93,8 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
 
         var psi = new ProcessStartInfo
         {
-            FileName = @"C:\Users\Tarik\PycharmProjects\ExcelParser\.venv\Scripts\python.exe",
-            Arguments = $@"C:\Users\Tarik\RiderProjects\EClubs\E-Clubs\External\excelParser.py -i ""{tempFilePath}"" -cId {clubId}",
+            FileName = "/home/venomts/JetBrains/PyCharm/ExcelParser/.venv/bin/python",
+            Arguments = $"/home/venomts/RiderProjects/EClubs/E-Clubs/External/excelParser.py -i {tempFilePath} -cId {clubId}",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -147,6 +148,10 @@ public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo,
         }
         
         await workPlansRepo.RealizeWorkPlanAsync(request.WorkPlanId, request.Date);
+        
+        // Ovdje pozivamo kreaciju Report-a
+        await reportService.CreateReportAsync(request.WorkPlanId);
+        
         return new Success();
     }
 }

@@ -6,6 +6,8 @@ using E_Clubs.Clubs;
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Messages;
 using E_Clubs.Messages.DTO;
+using E_Clubs.Reports;
+using E_Clubs.Reports.DTO;
 using E_Clubs.Users;
 using E_Clubs.Users.DTO;
 using E_Clubs.WorkPlans;
@@ -33,5 +35,7 @@ public class MappingProfile : Profile
         
         CreateMap<Attendance, GetAttendanceResponse>().ReverseMap();
         CreateMap<Attendance, RegisterAttendanceRequest>().ReverseMap();
+        
+        CreateMap<Report, GetReportsResponse>().ReverseMap();
     }
 }

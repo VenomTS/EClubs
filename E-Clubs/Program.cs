@@ -9,6 +9,8 @@ using E_Clubs.Clubs.Services;
 using E_Clubs.Database;
 using E_Clubs.Messages.Repositories;
 using E_Clubs.Messages.Services;
+using E_Clubs.Reports.Repositories;
+using E_Clubs.Reports.Services;
 using E_Clubs.Users.Repositories;
 using E_Clubs.Users.Services;
 using E_Clubs.WorkPlans.Repositories;
@@ -64,6 +66,7 @@ builder.Services.AddScoped<ClubService>();
 builder.Services.AddScoped<WorkPlansService>();
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<AttendanceService>();
+builder.Services.AddScoped<ReportService>();
 
 // Repositories
 builder.Services.AddScoped<UserRepository>();
@@ -72,6 +75,7 @@ builder.Services.AddScoped<ClubStudentRepository>();
 builder.Services.AddScoped<WorkPlansRepository>();
 builder.Services.AddScoped<MessageRepository>();
 builder.Services.AddScoped<AttendanceRepository>();
+builder.Services.AddScoped<ReportRepository>();
 
 // CORS
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy =>

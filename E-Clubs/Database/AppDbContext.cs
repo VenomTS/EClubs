@@ -1,6 +1,7 @@
 using E_Clubs.Attendances;
 using E_Clubs.Clubs;
 using E_Clubs.Messages;
+using E_Clubs.Reports;
 using E_Clubs.Users;
 using E_Clubs.WorkPlans;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<WorkPlan> WorkPlans { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<Attendance> Attendances { get; set; }
+    public DbSet<Report> Reports { get; set; }
 
     public DbSet<ClubStudent> ClubStudents { get; set; }
 

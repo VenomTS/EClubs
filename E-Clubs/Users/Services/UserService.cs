@@ -3,10 +3,8 @@ using E_Clubs.Auth.DTO;
 using E_Clubs.Auth.Services;
 using E_Clubs.Enums;
 using E_Clubs.OneOfTypes;
-using E_Clubs.Users.DTO;
 using E_Clubs.Users.Repositories;
 using OneOf;
-using OneOf.Types;
 
 namespace E_Clubs.Users.Services;
 
@@ -59,7 +57,7 @@ public class UserService(IMapper mapper, JWTService jwtService, UserRepository u
         // Initialize default role as a student
         userModel.PasswordHash = passwordHash;
         userModel.PasswordSalt = passwordSalt;
-        userModel.Roles = Roles.Student;
+        userModel.Roles = request.IsStudent ? Roles.Student : Roles.Professor;
         await userRepo.CreateUserAsync(userModel);
         
         var token = jwtService.GenerateToken(userModel);
