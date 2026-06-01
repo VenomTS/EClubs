@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Clubs.Clubs.Repositories;
 
-public class ClubStudentRepository(AppDbContext dbContext)
+public class ClubStudentRepository(AppDbContext dbContext) : IClubStudentRepository
 {
     public async Task AddStudentToClub(ClubStudent clubStudent)
     {

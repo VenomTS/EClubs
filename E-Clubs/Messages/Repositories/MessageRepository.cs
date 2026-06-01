@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Clubs.Messages.Repositories;
 
-public class MessageRepository(AppDbContext dbContext)
+public class MessageRepository(AppDbContext dbContext) : IMessageRepository
 {
     public async Task<Message?> GetMessageByIdAsync(Guid id)
     {

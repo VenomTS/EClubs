@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Clubs.Users.Repositories;
 
-public class UserRepository(AppDbContext dbContext)
+public class UserRepository(AppDbContext dbContext) : IUserRepository
 {
     public async Task CreateUserAsync(User user)
     {

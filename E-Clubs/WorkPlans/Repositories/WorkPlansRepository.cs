@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Clubs.WorkPlans.Repositories;
 
-public class WorkPlansRepository(AppDbContext dbContext)
+public class WorkPlansRepository(AppDbContext dbContext) : IWorkPlansRepository
 {
     public async Task<List<WorkPlan>> GetWorkPlansByClubIdAsync(Guid clubId)
     {

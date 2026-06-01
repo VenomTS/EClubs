@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Clubs.Reports.Repositories;
 
-public class ReportRepository(AppDbContext context)
+public class ReportRepository(AppDbContext context) : IReportRepository
 {
     public async Task<IEnumerable<Report>> GetReportsByClubIdAsync(Guid clubId)
     {
