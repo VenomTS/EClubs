@@ -12,7 +12,7 @@ using OneOf;
 
 namespace E_Clubs.Reports.Services;
 
-public class ReportService(IMapper mapper, ReportRepository reportRepo, ClubRepository clubRepo, WorkPlansRepository workPlansRepo, UserRepository userRepo, AttendanceRepository attendanceRepo)
+public class ReportService(IMapper mapper, IReportRepository reportRepo, IClubRepository clubRepo, IWorkPlansRepository workPlansRepo, IUserRepository userRepo, IAttendanceRepository attendanceRepo) : IReportService
 {
     public async Task<OneOf<IEnumerable<GetReportsResponse>, ClubNotFound>> GetReportsByClubIdAsync(
         GetReportsQueryObject request)

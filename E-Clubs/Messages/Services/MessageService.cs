@@ -8,7 +8,7 @@ using OneOf.Types;
 
 namespace E_Clubs.Messages.Services;
 
-public class MessageService(IMapper mapper, MessageRepository messageRepo, ClubRepository clubRepo)
+public class MessageService(IMapper mapper, IMessageRepository messageRepo, IClubRepository clubRepo) : IMessageService
 {
     public async Task<OneOf<GetMessageResponse, MessageNotFound>> GetMessageByIdAsync(Guid messageId)
     {

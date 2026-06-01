@@ -11,7 +11,7 @@ using OneOf.Types;
 
 namespace E_Clubs.Clubs.Services;
 
-public class ClubService(IMapper mapper, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, UserRepository userRepo)
+public class ClubService(IMapper mapper, IClubRepository clubRepo, IClubStudentRepository clubStudentRepo, IUserRepository userRepo) : IClubService
 {
     private const string CodeCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private const int CodeLength = 6;

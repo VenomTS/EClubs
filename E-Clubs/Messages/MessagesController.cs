@@ -6,7 +6,7 @@ namespace E_Clubs.Messages;
 
 [ApiController]
 [Route("/api/[controller]")]
-public class MessagesController(MessageService messageService) : ControllerBase
+public class MessagesController(IMessageService messageService) : ControllerBase
 {
     [HttpGet("{messageId:guid}", Name = "GetMessageById")]
     [ProducesResponseType<GetMessageResponse>(StatusCodes.Status200OK)]

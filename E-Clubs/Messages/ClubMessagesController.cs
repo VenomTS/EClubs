@@ -6,7 +6,7 @@ namespace E_Clubs.Messages;
 
 [ApiController]
 [Route("api/clubs/{clubId:guid}/[controller]")]
-public class ClubMessagesController(MessageService messageService) : ControllerBase
+public class ClubMessagesController(IMessageService messageService) : ControllerBase
 {
     
     [HttpGet(Name = "GetMessagesByClubId")]

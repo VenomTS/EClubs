@@ -13,7 +13,7 @@ using OneOf.Types;
 
 namespace E_Clubs.WorkPlans.Services;
 
-public class WorkPlansService(IMapper mapper, WorkPlansRepository workPlansRepo, ClubRepository clubRepo, ClubStudentRepository clubStudentRepo, AttendanceRepository attendanceRepo, ReportService reportService)
+public class WorkPlansService(IMapper mapper, IWorkPlansRepository workPlansRepo, IClubRepository clubRepo, IClubStudentRepository clubStudentRepo, IAttendanceRepository attendanceRepo, IReportService reportService) : IWorkPlansService
 {
     public async Task<OneOf<List<GetWorkPlanResponse>, ClubNotFound>> GetAllWorkPlansByClubIdAsync(Guid clubId)
     {

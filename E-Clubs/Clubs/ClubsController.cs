@@ -8,7 +8,7 @@ namespace E_Clubs.Clubs;
 
 [ApiController]
 [Route("/api/[controller]")]
-public class ClubsController(ClubService clubService) : ControllerBase
+public class ClubsController(IClubService clubService) : ControllerBase
 {
     [HttpGet("{id:guid}", Name = "GetClubById")]
     [ProducesResponseType<GetClubResponse>(StatusCodes.Status200OK)]

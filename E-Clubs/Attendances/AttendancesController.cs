@@ -6,7 +6,7 @@ namespace E_Clubs.Attendances;
 
 [ApiController]
 [Route("api/clubs/{clubId:guid}/[controller]")]
-public class AttendancesController(AttendanceService attendanceService) : ControllerBase
+public class AttendancesController(IAttendanceService attendanceService) : ControllerBase
 {
     // This one should only be accessible by the professor
     [HttpGet(Name = "GetAttendancesForClub")]

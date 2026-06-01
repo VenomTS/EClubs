@@ -3,6 +3,8 @@ using E_Clubs.OneOfTypes;
 using OneOf;
 using OneOf.Types;
 
+namespace E_Clubs.Attendances.Services;
+
 public interface IAttendanceService
 {
     Task<OneOf<List<GetAttendanceResponse>, ClubNotFound>> GetAllAttendancesByClubIdAsync(Guid clubId);

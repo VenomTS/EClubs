@@ -1,4 +1,3 @@
-using E_Clubs.Messages.DTO;
 using E_Clubs.WorkPlans.DTO;
 using E_Clubs.WorkPlans.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,7 @@ namespace E_Clubs.WorkPlans;
 
 [ApiController]
 [Route("api/clubs/{clubId:guid}/[controller]")]
-public class WorkPlansController(WorkPlansService workPlansService) : ControllerBase
+public class WorkPlansController(IWorkPlansService workPlansService) : ControllerBase
 {
 
     [HttpGet(Name = "GetWorkPlansForClub")]

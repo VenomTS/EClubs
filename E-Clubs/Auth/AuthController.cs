@@ -8,7 +8,7 @@ namespace E_Clubs.Auth;
 
 [ApiController]
 [Route("/api/[controller]")]
-public class AuthController(UserService userService) : ControllerBase
+public class AuthController(IUserService userService) : ControllerBase
 {
     private const string CookieName = "TOKEN";
 

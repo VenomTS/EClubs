@@ -30,6 +30,4 @@ public interface IClubService
 
     Task<OneOf<Success, ClubNotFound, StudentNotFound, ClubStudentNotFound>> DeleteStudentFromClub(
         Guid clubId, KickStudentRequest request);
-
-    Task<string> GenerateClubCode();
 }

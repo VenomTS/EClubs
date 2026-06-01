@@ -61,21 +61,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Services
 builder.Services.AddScoped<JWTService>();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<ClubService>();
-builder.Services.AddScoped<WorkPlansService>();
-builder.Services.AddScoped<MessageService>();
-builder.Services.AddScoped<AttendanceService>();
-builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IClubService, ClubService>();
+builder.Services.AddScoped<IWorkPlansService, WorkPlansService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // Repositories
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<ClubRepository>();
-builder.Services.AddScoped<ClubStudentRepository>();
-builder.Services.AddScoped<WorkPlansRepository>();
-builder.Services.AddScoped<MessageRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IClubRepository, ClubRepository>();
+builder.Services.AddScoped<IClubStudentRepository, ClubStudentRepository>();
+builder.Services.AddScoped<IWorkPlansRepository, WorkPlansRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
-builder.Services.AddScoped<ReportRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 // CORS
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy =>

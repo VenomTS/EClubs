@@ -7,7 +7,7 @@ namespace E_Clubs.Reports;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportsController(ReportService reportService) : ControllerBase
+public class ReportsController(IReportService reportService) : ControllerBase
 {
     [HttpGet(Name = "GetReportsByClubId")]
     [ProducesResponseType<IEnumerable<GetReportsResponse>>(StatusCodes.Status200OK)]

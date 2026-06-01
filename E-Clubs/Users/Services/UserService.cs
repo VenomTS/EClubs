@@ -8,7 +8,7 @@ using OneOf;
 
 namespace E_Clubs.Users.Services;
 
-public class UserService(IMapper mapper, JWTService jwtService, UserRepository userRepo)
+public class UserService(IMapper mapper, JWTService jwtService, IUserRepository userRepo) : IUserService
 {
     public async Task<OneOf<GetMeResponse, UserNotFound>> GetMeAsync(string token)
     {

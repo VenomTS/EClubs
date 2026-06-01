@@ -2,17 +2,15 @@ using AutoMapper;
 using E_Clubs.Attendances.DTO;
 using E_Clubs.Attendances.Repositories;
 using E_Clubs.Clubs.Repositories;
-using E_Clubs.Enums;
 using E_Clubs.OneOfTypes;
 using E_Clubs.Users.DTO;
 using E_Clubs.Users.Repositories;
-using E_Clubs.WorkPlans.Repositories;
 using OneOf;
 using OneOf.Types;
 
 namespace E_Clubs.Attendances.Services;
 
-public class AttendanceService(IMapper mapper, IAttendanceRepository attendanceRepo, ClubRepository clubRepo, UserRepository userRepo)
+public class AttendanceService(IMapper mapper, IAttendanceRepository attendanceRepo, IClubRepository clubRepo, IUserRepository userRepo) : IAttendanceService
 {
     public async Task<OneOf<List<GetAttendanceResponse>, ClubNotFound>> GetAllAttendancesByClubIdAsync(Guid clubId)
     {
