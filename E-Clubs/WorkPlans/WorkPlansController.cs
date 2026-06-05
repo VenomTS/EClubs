@@ -1,5 +1,7 @@
+using E_Clubs.Enums;
 using E_Clubs.WorkPlans.DTO;
 using E_Clubs.WorkPlans.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.WorkPlans;
@@ -12,6 +14,7 @@ public class WorkPlansController(IWorkPlansService workPlansService) : Controlle
     [HttpGet(Name = "GetWorkPlansForClub")]
     [ProducesResponseType<IEnumerable<GetWorkPlanResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}, {nameof(Roles.Director)}")]
     public async Task<IActionResult> Get([FromRoute] Guid clubId)
     {
         var result = await workPlansService.GetAllWorkPlansByClubIdAsync(clubId);
@@ -32,6 +35,7 @@ public class WorkPlansController(IWorkPlansService workPlansService) : Controlle
     [HttpPost(Name = "CreateWorkPlanForClub")]
     [ProducesResponseType<GetWorkPlanResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}")]
     public async Task<IActionResult> Create([FromRoute] Guid clubId, [FromBody] CreateWorkPlanRequest request)
     {
         var result = await workPlansService.CreateWorkPlanAsync(clubId, request);
@@ -63,6 +67,7 @@ public class WorkPlansController(IWorkPlansService workPlansService) : Controlle
     [ProducesResponseType<GetWorkPlanResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}")]
     public async Task<IActionResult> GetCurrentWorkPlan([FromRoute] Guid clubId)
     {
         var result = await workPlansService.GetCurrentWorkPlanByClubIdAsync(clubId);
@@ -84,6 +89,7 @@ public class WorkPlansController(IWorkPlansService workPlansService) : Controlle
     [HttpGet("domains", Name = "GetDomainsByClubId")]
     [ProducesResponseType<IEnumerable<GetDomainsResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}")]
     public async Task<ActionResult> GetDomains([FromRoute] Guid clubId)
     {
         var result = await workPlansService.GetDomainsByClubIdAsync(clubId);
@@ -102,6 +108,7 @@ public class WorkPlansController(IWorkPlansService workPlansService) : Controlle
     }
 
     [HttpPost("upload", Name = "UploadWorkPlansForClub")]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}")]
     public async Task<ActionResult> Upload([FromRoute] Guid clubId, IFormFile file)
     {
         var result = await workPlansService.UploadWorkPlans(clubId, file);
@@ -120,6 +127,7 @@ public class WorkPlansController(IWorkPlansService workPlansService) : Controlle
     }
 
     [HttpPost("conclude", Name = "ConcludeWorkPlanForClub")]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}")]
     public async Task<ActionResult> Conclude([FromRoute] Guid clubId, [FromBody] ConcludeWorkPlanRequest request)
     {
         var result = await workPlansService.ConcludeWorkPlan(clubId, request);

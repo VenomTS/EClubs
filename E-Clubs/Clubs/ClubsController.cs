@@ -1,7 +1,9 @@
 using E_Clubs.Clubs.DTO;
 using E_Clubs.Clubs.QueryObjects;
 using E_Clubs.Clubs.Services;
+using E_Clubs.Enums;
 using E_Clubs.Users.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Clubs;
@@ -13,6 +15,7 @@ public class ClubsController(IClubService clubService) : ControllerBase
     [HttpGet("{id:guid}", Name = "GetClubById")]
     [ProducesResponseType<GetClubResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Student)}, {nameof(Roles.Professor)}, {nameof(Roles.Director)}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await clubService.GetClubByIdAsync(id);
@@ -32,6 +35,7 @@ public class ClubsController(IClubService clubService) : ControllerBase
     
     [HttpPost(Name = "CreateClub")]
     [ProducesResponseType<GetClubResponse>(StatusCodes.Status201Created)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}")]
     public async Task<IActionResult> Create([FromBody] CreateClubRequest request)
     {
         var createdClub = await clubService.CreateClubAsync(request);
@@ -39,6 +43,7 @@ public class ClubsController(IClubService clubService) : ControllerBase
     }
 
     [HttpGet(Name = "GetClubsForUser")]
+    [Authorize(Roles = $"{nameof(Roles.Student)}, {nameof(Roles.Professor)}")]
     [ProducesResponseType<IEnumerable<GetClubResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetClubsQueryObject queryObject)
     {
@@ -50,6 +55,7 @@ public class ClubsController(IClubService clubService) : ControllerBase
     [HttpGet("{clubId:guid}/students", Name = "GetStudentsInClub")]
     [ProducesResponseType<IEnumerable<GetUserResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}, {nameof(Roles.Director)}")]
     public async Task<IActionResult> GetStudents([FromRoute] Guid clubId)
     {
         var result = await clubService.GetStudentsByClubIdAsync(clubId);
@@ -71,6 +77,7 @@ public class ClubsController(IClubService clubService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [Authorize(Roles = $"{nameof(Roles.Student)}")]
     public async Task<IActionResult> AddStudent([FromBody] JoinClubRequest request)
     {
         var result = await clubService.AddStudentToClubAsync(request);
@@ -107,6 +114,7 @@ public class ClubsController(IClubService clubService) : ControllerBase
     [HttpDelete("{clubId:guid}/students", Name = "DeleteStudentFromClub")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Student)}, {nameof(Roles.Professor)}")]
     public async Task<IActionResult> DeleteStudent([FromRoute] Guid clubId, [FromBody] KickStudentRequest request)
     {
         var result = await clubService.DeleteStudentFromClub(clubId, request);

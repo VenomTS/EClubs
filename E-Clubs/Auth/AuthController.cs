@@ -51,7 +51,7 @@ public class AuthController(IUserService userService) : ControllerBase
                 Type = "User-Already-Exists",
                 Title = "Conflict",
                 Status = StatusCodes.Status409Conflict,
-                Detail = "A user with this email already exists",
+                Detail = $"A user with email {registerUserRequest.Mail} already exists",
                 Instance = HttpContext.Request.Path
             });
         

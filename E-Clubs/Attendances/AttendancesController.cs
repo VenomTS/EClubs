@@ -1,5 +1,7 @@
 using E_Clubs.Attendances.DTO;
 using E_Clubs.Attendances.Services;
+using E_Clubs.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Attendances;
@@ -12,6 +14,7 @@ public class AttendancesController(IAttendanceService attendanceService) : Contr
     [HttpGet(Name = "GetAttendancesForClub")]
     [ProducesResponseType<IEnumerable<GetAttendanceResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}, {nameof(Roles.Director)}")]
     public async Task<ActionResult> GetAll([FromRoute] Guid clubId)
     {
         var result = await attendanceService.GetAllAttendancesByClubIdAsync(clubId);
@@ -23,6 +26,7 @@ public class AttendancesController(IAttendanceService attendanceService) : Contr
 
     // This one should only be accessible by the student
     [HttpGet("{userId:guid}", Name = "GetUserAttendancesForClub")]
+    [Authorize(Roles = $"{nameof(Roles.Student)}")]
     public async Task<ActionResult<GetAttendanceResponse>> Get([FromRoute] Guid clubId, [FromRoute] Guid userId)
     {
         var result = await attendanceService.GetUserAttendanceByClubIdAsync(clubId, userId);
@@ -37,6 +41,7 @@ public class AttendancesController(IAttendanceService attendanceService) : Contr
     [HttpPost(Name = "MarkStudentPresent")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Student)}")]
     public async Task<IActionResult> Register([FromRoute] Guid clubId, [FromBody] RegisterAttendanceRequest request)
     {
         var result = await attendanceService.RegisterAttendanceAsync(clubId, request);
@@ -61,17 +66,4 @@ public class AttendancesController(IAttendanceService attendanceService) : Contr
             })
         );
     }
-
-    // Call this when finished taking attendance
-    /*[HttpPost("conclude", Name = "ConcludeAttendanceTaking")]
-    public async Task<IActionResult> ConcludeRegistration([FromRoute] Guid clubId)
-    {
-        var result = await attendanceService.MarkAbsentStudentsAsync(clubId);
-        
-        if(result.IsT1)
-            return NotFound("Club not found");
-
-        await clubService.ConcludeWorkPlan(clubId);
-        return NoContent();
-    }*/
 }

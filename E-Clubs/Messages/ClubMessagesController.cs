@@ -1,5 +1,7 @@
+using E_Clubs.Enums;
 using E_Clubs.Messages.DTO;
 using E_Clubs.Messages.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Messages;
@@ -12,6 +14,7 @@ public class ClubMessagesController(IMessageService messageService) : Controller
     [HttpGet(Name = "GetMessagesByClubId")]
     [ProducesResponseType<IEnumerable<GetMessageResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Student)}, {nameof(Roles.Professor)}, {nameof(Roles.Director)}")]
     public async Task<IActionResult> GetAll([FromRoute] Guid clubId)
     {
         var result = await messageService.GetAllMessagesByClubIdAsync(clubId);
@@ -32,10 +35,9 @@ public class ClubMessagesController(IMessageService messageService) : Controller
     [HttpPost(Name = "SendMessage")]
     [ProducesResponseType<GetMessageResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}")]
     public async Task<IActionResult> Create([FromRoute] Guid clubId, [FromBody] CreateMessageRequest request)
     {
-        // Validate sender and stuff
-        
         var result = await messageService.CreateMessageAsync(clubId, request);
 
         return result.Match<IActionResult>(

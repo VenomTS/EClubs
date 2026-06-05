@@ -74,7 +74,6 @@ public class ClubService(IMapper mapper, IClubRepository clubRepo, IClubStudentR
         if (club == null)
             return new ClubNotFound();
 
-        // Dodatni check da se provjeri je li actually student
         var studentExists = await userRepo.UserExistsAsync(request.StudentId);
         if (!studentExists)
             return new StudentNotFound();

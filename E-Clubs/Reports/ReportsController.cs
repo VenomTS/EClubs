@@ -1,6 +1,8 @@
+using E_Clubs.Enums;
 using E_Clubs.Reports.DTO;
 using E_Clubs.Reports.QueryObject;
 using E_Clubs.Reports.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Clubs.Reports;
@@ -12,6 +14,7 @@ public class ReportsController(IReportService reportService) : ControllerBase
     [HttpGet(Name = "GetReportsByClubId")]
     [ProducesResponseType<IEnumerable<GetReportsResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = $"{nameof(Roles.Professor)}, {nameof(Roles.Director)}")]
     public async Task<ActionResult> GetByClubId([FromQuery] GetReportsQueryObject request)
     {
         var result = await reportService.GetReportsByClubIdAsync(request);
